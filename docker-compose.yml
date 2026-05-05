@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: brek_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: brek_user
+      POSTGRES_PASSWORD: brek_password
+      POSTGRES_DB: brek_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - brek_pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: brek_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@brek.fr
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+volumes:
+  brek_pgdata:
