@@ -46,7 +46,7 @@ export default async function HomePage({
 
   return (
     <>
-      <HeroSection locale={locale} />
+      <HeroSection locale={locale} collections={collections.slice(0, 3)} />
       <CollectionsSection collections={collections} locale={locale} />
       <FeaturedProductsSection products={featuredProducts} locale={locale} />
       <DesignersPreviewSection designers={designers} locale={locale} />

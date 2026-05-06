@@ -1,8 +1,8 @@
 # gemini.md — Suivi du projet Brek
 
-## Dernière mise à jour : 2026-05-05
+## Dernière mise à jour : 2026-05-06
 
-## État du projet : Phase 1-3 ✅ Complétée | Phase 4 à démarrer
+## État du projet : Phase 1-3 ✅ Complétée | Phase 4 en cours...
 
 ---
 
@@ -36,7 +36,7 @@
 - `CartDrawer` : panier latéral avec quantités en mètres
 - `Footer` : colonnes + réseaux sociaux (SVG inline pour Instagram/LinkedIn)
 - `ProductCard` : carte produit avec overlay actions
-- `HeroSection` : hero dark avec stats animées
+- `HeroSection` : hero dark avec support vidéo background et stats animées
 - `CollectionsSection` : grille asymétrique (CSS dans globals.css)
 - `FeaturedProductsSection` : produits phares fond sombre
 - `DesignersPreviewSection` : cartes designers
@@ -66,12 +66,12 @@
 | `/[locale]/favoris` | ✅ |
 | `/[locale]/compte` | ✅ |
 | `/[locale]/admin` | ✅ (dashboard KPIs) |
-| `/[locale]/panier` | 🔲 (géré via CartDrawer) |
-| `/[locale]/newsletter` | 🔲 À créer |
-| `/[locale]/admin/produits` | 🔲 À créer |
-| `/[locale]/admin/commandes` | 🔲 À créer |
-| `/[locale]/admin/utilisateurs` | 🔲 À créer |
-| `/[locale]/admin/messages` | 🔲 À créer |
+| `/[locale]/panier` | ✅ (via CartDrawer) |
+| `/[locale]/newsletter` | ✅ |
+| `/[locale]/admin/produits` | ✅ |
+| `/[locale]/admin/commandes` | ✅ |
+| `/[locale]/admin/utilisateurs` | ✅ |
+| `/[locale]/admin/messages` | ✅ |
 
 ## APIs créées
 - `GET/POST /api/produits` — liste + filtres

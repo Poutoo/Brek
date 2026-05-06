@@ -1,236 +1,282 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+
+interface Collection {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  coverImage: string;
+  videoUrl?: string;
+}
 
 interface HeroSectionProps {
   locale: string;
+  collections: Collection[];
 }
 
-export function HeroSection({ locale }: HeroSectionProps) {
-  const t = useTranslations("home");
+export function HeroSection({ locale, collections }: HeroSectionProps) {
+  const [current, setCurrent] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const scrollToCollections = () => {
-    document.getElementById("collections-section")?.scrollIntoView({ behavior: "smooth" });
-  };
+  const nextSlide = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrent((prev) => (prev + 1) % collections.length);
+    setTimeout(() => setIsAnimating(false), 800);
+  }, [collections.length, isAnimating]);
+
+  const prevSlide = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrent((prev) => (prev - 1 + collections.length) % collections.length);
+    setTimeout(() => setIsAnimating(false), 800);
+  }, [collections.length, isAnimating]);
+
+  useEffect(() => {
+    const timer = setInterval(nextSlide, 7000);
+    return () => clearInterval(timer);
+  }, [nextSlide]);
+
+  if (!collections.length) return null;
 
   return (
-    <section className="hero" aria-label="Hero Brek">
-      {/* Background */}
-      <div className="hero__bg" aria-hidden="true">
-        <div className="hero__bg-img" />
-        <div className="hero__bg-overlay" />
-        {/* Motif géométrique */}
-        <div className="hero__pattern" aria-hidden="true" />
-      </div>
-
-      <div className="hero__content container-brek">
-        {/* Badge */}
-        <div className="hero__badge animate-fade-in-up">
-          <span className="divider-gold">
-            <span className="hero__badge-text">Maison de Passementerie</span>
-          </span>
-        </div>
-
-        {/* Titre */}
-        <h1 className="hero__title animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          {t("hero_title")}
-        </h1>
-
-        {/* Sous-titre */}
-        <p className="hero__subtitle animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-          {t("hero_subtitle")}
-        </p>
-
-        {/* CTAs */}
-        <div className="hero__ctas animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
-          <Link href={`/${locale}/collections`} className="btn btn-primary btn-lg">
-            {t("hero_cta")}
-            <ArrowRight size={16} />
-          </Link>
-          <Link href={`/${locale}/designers`} className="btn btn-secondary btn-lg hero__cta-secondary">
-            {t("hero_cta_secondary")}
-          </Link>
-        </div>
-
-        {/* Stats */}
-        <div className="hero__stats animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-          <div className="hero__stat">
-            <span className="hero__stat-num">1987</span>
-            <span className="hero__stat-label">Fondée en</span>
+    <section className="hero" aria-label="Collections Phares">
+      {collections.map((col, index) => (
+        <div 
+          key={col.id} 
+          className={`hero__slide ${index === current ? "hero__slide--active" : ""}`}
+          aria-hidden={index !== current}
+        >
+          {/* Background Image/Video */}
+          <div className="hero__image-wrapper">
+            {col.videoUrl ? (
+              <video
+                src={col.videoUrl}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="hero__video"
+              />
+            ) : (
+              <Image
+                src={col.coverImage || "/assets/placeholder.png"}
+                alt={col.name}
+                fill
+                priority={index === 0}
+                className="hero__image"
+                style={{ objectFit: "cover" }}
+              />
+            )}
+            <div className="hero__overlay" />
           </div>
-          <div className="hero__stat-divider" aria-hidden="true" />
-          <div className="hero__stat">
-            <span className="hero__stat-num">3</span>
-            <span className="hero__stat-label">Collections</span>
-          </div>
-          <div className="hero__stat-divider" aria-hidden="true" />
-          <div className="hero__stat">
-            <span className="hero__stat-num">3</span>
-            <span className="hero__stat-label">Designers</span>
-          </div>
-          <div className="hero__stat-divider" aria-hidden="true" />
-          <div className="hero__stat">
-            <span className="hero__stat-num">100%</span>
-            <span className="hero__stat-label">Français</span>
+
+          {/* Content */}
+          <div className="hero__content">
+            <div className="container-brek hero__content-inner">
+              <h1 className="hero__title">
+                {col.name.toUpperCase()}
+              </h1>
+              
+              <Button 
+                href={`/${locale}/collections/${col.slug}`} 
+                variant="invert"
+                className="hero__cta-btn"
+                withLine
+              >
+                DÉCOUVRIR LA COLLECTION
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      ))}
 
-      {/* Scroll indicator */}
-      <button
-        className="hero__scroll"
-        onClick={scrollToCollections}
-        aria-label="Défiler vers les collections"
-      >
-        <ChevronDown size={20} />
+      {/* Navigation Flèches */}
+      <button className="hero__nav-btn hero__nav-btn--prev" onClick={prevSlide} aria-label="Collection précédente">
+        <ChevronLeft size={32} strokeWidth={1} />
       </button>
+      <button className="hero__nav-btn hero__nav-btn--next" onClick={nextSlide} aria-label="Collection suivante">
+        <ChevronRight size={32} strokeWidth={1} />
+      </button>
+
+      {/* Pagination / Dots */}
+      <div className="hero__dots">
+        {collections.map((_, i) => (
+          <button
+            key={i}
+            className={`hero__dot ${i === current ? "hero__dot--active" : ""}`}
+            onClick={() => {
+              if (i !== current && !isAnimating) {
+                setIsAnimating(true);
+                setCurrent(i);
+                setTimeout(() => setIsAnimating(false), 800);
+              }
+            }}
+            aria-label={`Aller à la collection ${i + 1}`}
+          />
+        ))}
+      </div>
 
       <style jsx>{`
         .hero {
           position: relative;
-          min-height: calc(100vh - var(--nav-height));
-          display: flex;
-          align-items: center;
+          height: 100vh;
+          height: 100dvh;
+          width: 100%;
           overflow: hidden;
+          background: #000;
         }
-        .hero__bg {
+
+        .hero__slide {
           position: absolute;
           inset: 0;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.8s var(--ease-luxury), visibility 0.8s;
+          z-index: 1;
         }
-        .hero__bg-img {
+
+        .hero__slide--active {
+          opacity: 1;
+          visibility: visible;
+          z-index: 2;
+        }
+
+        .hero__image-wrapper {
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, var(--dark-brown) 0%, var(--charcoal) 50%, #0d0b09 100%);
+          z-index: 1;
         }
-        .hero__bg-overlay {
+
+        .hero__image,
+        .hero__video {
           position: absolute;
           inset: 0;
-          background: radial-gradient(ellipse at 60% 50%, rgba(201,168,76,0.08) 0%, transparent 60%);
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transform: scale(1.1);
+          transition: transform 7s linear;
         }
-        .hero__pattern {
+
+        .hero__slide--active .hero__image,
+        .hero__slide--active .hero__video {
+          transform: scale(1);
+        }
+
+        .hero__overlay {
           position: absolute;
           inset: 0;
-          opacity: 0.04;
-          background-image: repeating-linear-gradient(
-            45deg,
-            var(--gold) 0,
-            var(--gold) 1px,
-            transparent 0,
-            transparent 50%
-          );
-          background-size: 30px 30px;
+          background: rgba(0, 0, 0, 0.4);
+          z-index: 2;
         }
+
         .hero__content {
           position: relative;
           z-index: 10;
+          height: 100%;
           display: flex;
-          flex-direction: column;
           align-items: center;
-          text-align: center;
-          gap: 1.5rem;
-          padding-top: 4rem;
-          padding-bottom: 8rem;
-          color: var(--cream);
-        }
-        .hero__badge {
-          width: 100%;
-          max-width: 400px;
-        }
-        .hero__badge-text {
-          font-size: 0.6875rem;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          color: var(--gold);
-        }
-        .hero__title {
-          font-family: var(--font-display);
-          font-size: clamp(2.5rem, 6vw, 5rem);
-          font-weight: 300;
-          color: var(--cream);
-          max-width: 800px;
-          line-height: 1.1;
-          letter-spacing: -0.01em;
-        }
-        .hero__subtitle {
-          font-size: clamp(0.875rem, 2vw, 1rem);
-          color: rgba(255,253,247,0.6);
-          max-width: 500px;
-          line-height: 1.7;
-        }
-        .hero__ctas {
-          display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
           justify-content: center;
         }
-        .hero__cta-secondary {
-          color: var(--cream);
-          border-color: rgba(255,253,247,0.3);
-        }
-        .hero__cta-secondary:hover {
-          border-color: var(--gold);
-          color: var(--gold);
-        }
-        .hero__stats {
+
+        .hero__content-inner {
+          text-align: center;
           display: flex;
+          flex-direction: column;
           align-items: center;
           gap: 2rem;
-          flex-wrap: wrap;
-          justify-content: center;
-          margin-top: 1rem;
         }
-        .hero__stat {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.25rem;
-        }
-        .hero__stat-num {
+
+        .hero__title {
           font-family: var(--font-display);
-          font-size: 1.75rem;
+          font-size: clamp(3rem, 10vw, 8rem);
           font-weight: 300;
-          color: var(--gold);
-          line-height: 1;
-        }
-        .hero__stat-label {
-          font-size: 0.625rem;
+          color: #fff;
           letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: rgba(255,253,247,0.4);
+          line-height: 1;
+          margin: 0;
+          text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+          transform: translateY(20px);
+          opacity: 0;
+          transition: transform 1s var(--ease-luxury), opacity 1s var(--ease-luxury);
+          transition-delay: 0.3s;
         }
-        .hero__stat-divider {
-          width: 1px;
-          height: 40px;
-          background: rgba(255,253,247,0.15);
+
+        .hero__slide--active .hero__title {
+          transform: translateY(0);
+          opacity: 1;
         }
-        .hero__scroll {
+
+        .hero__cta-btn {
+          transform: translateY(20px);
+          opacity: 0;
+          transition: transform 1s var(--ease-luxury), opacity 1s var(--ease-luxury) !important;
+          transition-delay: 0.5s !important;
+        }
+
+        .hero__slide--active .hero__cta-btn {
+          transform: translateY(0);
+          opacity: 1;
+        }
+
+        /* Navigation */
+        .hero__nav-btn {
           position: absolute;
-          bottom: 2rem;
+          top: 50%;
+          transform: translateY(-50%);
+          background: transparent;
+          border: none;
+          color: rgba(255, 255, 255, 0.4);
+          cursor: pointer;
+          z-index: 20;
+          padding: 2rem;
+          transition: color 0.3s, transform 0.3s;
+        }
+
+        .hero__nav-btn:hover {
+          color: #fff;
+        }
+
+        .hero__nav-btn--prev { left: 1rem; }
+        .hero__nav-btn--prev:hover { transform: translateY(-50%) translateX(-5px); }
+        .hero__nav-btn--next { right: 1rem; }
+        .hero__nav-btn--next:hover { transform: translateY(-50%) translateX(5px); }
+
+        /* Pagination */
+        .hero__dots {
+          position: absolute;
+          bottom: 3rem;
           left: 50%;
           transform: translateX(-50%);
           display: flex;
-          align-items: center;
-          justify-content: center;
+          gap: 1rem;
+          z-index: 20;
+        }
+
+        .hero__dot {
           width: 40px;
-          height: 40px;
-          border: 1px solid rgba(255,253,247,0.2);
-          border-radius: 50%;
-          background: transparent;
-          color: rgba(255,253,247,0.5);
+          height: 2px;
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
           cursor: pointer;
-          animation: bounce 2s infinite;
-          transition: all 0.2s;
-          z-index: 10;
+          transition: background 0.3s;
         }
-        .hero__scroll:hover {
-          border-color: var(--gold);
-          color: var(--gold);
+
+        .hero__dot--active {
+          background: #fff;
         }
-        @keyframes bounce {
-          0%, 100% { transform: translateX(-50%) translateY(0); }
-          50% { transform: translateX(-50%) translateY(6px); }
+
+        @media (max-width: 768px) {
+          .hero__title { font-size: 4rem; }
+          .hero__nav-btn { display: none; }
+          .hero__cta { padding: 1rem 1.5rem; }
         }
       `}</style>
     </section>

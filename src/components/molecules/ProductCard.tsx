@@ -63,8 +63,8 @@ export function ProductCard({
   };
 
   return (
-    <article className="card card-product">
-      <Link href={`/${locale}/produits/${product.slug}`} aria-label={`Voir ${product.name}`}>
+    <article className="card card-product" style={{ position: "relative" }}>
+
         {/* Image */}
         <div className="product-image-wrapper">
           <Image
@@ -85,7 +85,7 @@ export function ProductCard({
           </div>
 
           {/* Overlay actions */}
-          <div className="product-overlay">
+          <div className="product-overlay" style={{ zIndex: 10 }}>
             <div className="product-actions">
               <button
                 className="product-action-btn"
@@ -106,14 +106,6 @@ export function ProductCard({
                   <Heart size={16} fill={isFavorite ? "currentColor" : "none"} />
                 </button>
               )}
-              <Link
-                href={`/${locale}/produits/${product.slug}`}
-                className="product-action-btn"
-                aria-label={`Voir ${product.name}`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Eye size={16} />
-              </Link>
             </div>
           </div>
         </div>
@@ -137,7 +129,13 @@ export function ProductCard({
           </div>
           <p className="product-ref">Réf. {product.ref}</p>
         </div>
-      </Link>
+
+        {/* Lien global (Overlay Link) */}
+        <Link 
+          href={`/${locale}/produits/${product.slug}`} 
+          className="product-full-link"
+          aria-label={`Voir les détails de ${product.name}`}
+        />
 
       {/* Add to cart feedback */}
       {added && (
@@ -249,6 +247,12 @@ export function ProductCard({
           text-align: center;
           padding: 0.5rem;
           animation: fadeInUp 0.2s var(--ease-luxury);
+          z-index: 15;
+        }
+        .product-full-link {
+          position: absolute;
+          inset: 0;
+          z-index: 5;
         }
         :global(.product-img) { object-fit: cover; }
       `}</style>
