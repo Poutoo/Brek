@@ -24,7 +24,7 @@ export default async function AdminProductsPage({ params }: { params: Promise<{ 
       <div className="container-brek">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2.5rem", flexWrap: "wrap", gap: "1rem" }}>
           <div>
-            <Link href={`/${locale}/admin`} className="btn btn-ghost btn-sm" style={{ paddingLeft: 0, marginBottom: "0.5rem" }}>
+            <Link href={`/${locale}/dashboard`} className="btn btn-ghost btn-sm" style={{ paddingLeft: 0, marginBottom: "0.5rem" }}>
               ← Retour au Dashboard
             </Link>
             <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.5rem", fontWeight: 300 }}>Gestion des produits</h1>

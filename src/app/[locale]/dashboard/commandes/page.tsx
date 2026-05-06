@@ -45,7 +45,7 @@ export default async function AdminOrdersPage({ params }: { params: Promise<{ lo
     <div style={{ paddingTop: "3rem", paddingBottom: "6rem" }}>
       <div className="container-brek">
         <div style={{ marginBottom: "2.5rem" }}>
-          <Link href={`/${locale}/admin`} className="btn btn-ghost btn-sm" style={{ paddingLeft: 0, marginBottom: "0.5rem" }}>
+          <Link href={`/${locale}/dashboard`} className="btn btn-ghost btn-sm" style={{ paddingLeft: 0, marginBottom: "0.5rem" }}>
             ← Retour au Dashboard
           </Link>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.5rem", fontWeight: 300 }}>Gestion des commandes</h1>
@@ -98,7 +98,7 @@ export default async function AdminOrdersPage({ params }: { params: Promise<{ lo
                     </span>
                   </td>
                   <td style={{ padding: "1rem", textAlign: "right" }}>
-                    <Link href={`/${locale}/admin/commandes/${order.id}`} className="btn btn-ghost btn-sm" style={{ padding: 8 }} title="Voir détails">
+                    <Link href={`/${locale}/dashboard/commandes/${order.id}`} className="btn btn-ghost btn-sm" style={{ padding: 8 }} title="Voir détails">
                       <Eye size={14} />
                     </Link>
                   </td>

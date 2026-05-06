@@ -1,129 +1,199 @@
-import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useState, use } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Package, Users, ShoppingBag, BarChart3, Settings, MessageSquare } from "lucide-react";
-import { formatPrice } from "@/lib/utils";
-import type { Metadata } from "next";
+import { signIn } from "next-auth/react";
+import { Eye, EyeOff, ArrowRight, ShieldCheck } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Administration",
-  description: "Dashboard d'administration Brek",
-};
+export default function AdminLoginPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const router = useRouter();
+  const resolvedParams = use(params);
+  const locale = resolvedParams.locale;
+  const [showPwd, setShowPwd] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
 
-export default async function AdminPage({ params }: { params: Promise<{ locale: string }> }) {
-  const session = await getServerSession(authOptions);
-  const isAdmin = (session?.user as { role?: string })?.role === "ADMIN";
-  const { locale } = await params;
-
-  if (!session || !isAdmin) redirect(`/${locale}/connexion`);
-
-  const [productCount, userCount, orderCount, orderStats, contactCount, recentOrders] = await Promise.all([
-    prisma.product.count({ where: { active: true } }),
-    prisma.user.count(),
-    prisma.order.count(),
-    prisma.order.aggregate({ _sum: { totalAmount: true } }),
-    prisma.contactMessage.count({ where: { read: false } }),
-    prisma.order.findMany({
-      take: 5, orderBy: { createdAt: "desc" },
-      include: { user: { select: { name: true, email: true } }, items: { take: 1 } },
-    }),
-  ]);
-
-  const totalRevenue = orderStats._sum.totalAmount || 0;
-
-  const STATUS_LABELS: Record<string, string> = {
-    PENDING: "En attente", CONFIRMED: "Confirmée", PROCESSING: "En préparation",
-    SHIPPED: "Expédiée", DELIVERED: "Livrée", CANCELLED: "Annulée",
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError("");
   };
 
-  const stats = [
-    { icon: <ShoppingBag size={22} />, label: "Produits actifs", value: productCount, color: "var(--gold)" },
-    { icon: <Users size={22} />, label: "Utilisateurs", value: userCount, color: "#2563eb" },
-    { icon: <Package size={22} />, label: "Commandes", value: orderCount, color: "#16a34a" },
-    { icon: <BarChart3 size={22} />, label: "Revenus simulés", value: formatPrice(totalRevenue), color: "#9333ea" },
-  ];
-
-  const adminLinks = [
-    { href: `/${locale}/admin/produits`, icon: <ShoppingBag size={18} />, label: "Gérer les produits", desc: `${productCount} produits` },
-    { href: `/${locale}/admin/commandes`, icon: <Package size={18} />, label: "Gérer les commandes", desc: `${orderCount} commandes` },
-    { href: `/${locale}/admin/utilisateurs`, icon: <Users size={18} />, label: "Gérer les utilisateurs", desc: `${userCount} comptes` },
-    { href: `/${locale}/admin/messages`, icon: <MessageSquare size={18} />, label: "Messages contact", desc: contactCount > 0 ? `${contactCount} non lu(s)` : "Aucun nouveau" },
-  ];
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const res = await signIn("credentials", {
+      email: form.email,
+      password: form.password,
+      redirect: false,
+    });
+    setLoading(false);
+    
+    if (res?.error) {
+      setError("Identifiants incorrects ou accès refusé.");
+    } else {
+      // Force refresh and redirect to dashboard
+      router.push(`/${locale}/dashboard`);
+      router.refresh();
+    }
+  };
 
   return (
-    <div style={{ paddingTop: "3rem", paddingBottom: "6rem" }}>
-      <div className="container-brek">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2.5rem", flexWrap: "wrap", gap: "1rem" }}>
-          <div>
-            <p style={{ fontSize: "0.6875rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gold)", marginBottom: "0.25rem" }}>Administration</p>
-            <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.5rem", fontWeight: 300 }}>Dashboard</h1>
+    <div className="admin-auth-container">
+      <div className="admin-auth-card">
+        <div className="admin-auth-header">
+          <ShieldCheck size={48} strokeWidth={1} style={{ marginBottom: "1rem", color: "var(--gold)" }} />
+          <h1 className="admin-auth-title">Portail Sécurisé</h1>
+          <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", marginTop: "0.5rem" }}>Accès réservé à l'équipe Brek Paris</p>
+        </div>
+
+        {error && (
+          <div className="admin-auth-error" role="alert">
+            {error}
           </div>
-          <span className="badge badge-gold" style={{ fontSize: "0.6875rem" }}>Admin</span>
-        </div>
+        )}
 
-        {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "1.25rem", marginBottom: "2.5rem" }}>
-          {stats.map((stat) => (
-            <div key={stat.label} style={{ border: "1px solid var(--divider)", borderRadius: 4, padding: "1.25rem", background: "var(--bg-card)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.875rem" }}>
-                <span style={{ color: stat.color }}>{stat.icon}</span>
-                <span style={{ fontSize: "0.6875rem", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>{stat.label}</span>
-              </div>
-              <p style={{ fontFamily: "var(--font-display)", fontSize: "1.875rem", fontWeight: 300 }}>{stat.value}</p>
-            </div>
-          ))}
-        </div>
+        <form onSubmit={handleLogin} className="auth-form" noValidate>
+          <div className="input-group">
+            <input type="email" name="email" id="email" value={form.email}
+              onChange={handleChange} className="input-field" placeholder=" " required
+              autoComplete="email" />
+            <label htmlFor="email" className="input-label">Email Professionnel</label>
+          </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }}>
-          {/* Liens admin */}
-          <section>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.375rem", fontWeight: 400, marginBottom: "1.25rem" }}>Actions rapides</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
-              {adminLinks.map((link) => (
-                <Link key={link.href} href={link.href}
-                  className="admin-link-card">
-                  <span style={{ color: "var(--gold)" }}>{link.icon}</span>
-                  <div>
-                    <p style={{ fontWeight: 500, fontSize: "0.875rem" }}>{link.label}</p>
-                    <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{link.desc}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
+          <div className="input-group" style={{ position: "relative" }}>
+            <input type={showPwd ? "text" : "password"} name="password" id="password"
+              value={form.password} onChange={handleChange} className="input-field"
+              placeholder=" " required autoComplete="current-password" />
+            <label htmlFor="password" className="input-label">Mot de passe</label>
+            <button type="button" className="auth-pwd-toggle"
+              onClick={() => setShowPwd(!showPwd)}
+              aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}>
+              {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
 
-          {/* Commandes récentes */}
-          <section>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.375rem", fontWeight: 400, marginBottom: "1.25rem" }}>Commandes récentes</h2>
-            <div style={{ border: "1px solid var(--divider)", borderRadius: 4, overflow: "hidden" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
-                <thead>
-                  <tr style={{ background: "var(--bg-secondary)", borderBottom: "1px solid var(--divider)" }}>
-                    {["Numéro", "Client", "Article", "Statut", "Total"].map((h) => (
-                      <th key={h} style={{ padding: "0.875rem 1rem", textAlign: "left", fontSize: "0.6875rem", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 500 }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentOrders.map((order) => (
-                    <tr key={order.id} style={{ borderBottom: "1px solid var(--divider)" }}>
-                      <td style={{ padding: "0.875rem 1rem", fontWeight: 600 }}>{order.orderNumber}</td>
-                      <td style={{ padding: "0.875rem 1rem", color: "var(--text-muted)" }}>{order.user?.name || order.user?.email || "—"}</td>
-                      <td style={{ padding: "0.875rem 1rem", color: "var(--text-muted)" }}>{order.items[0]?.productName || "—"}</td>
-                      <td style={{ padding: "0.875rem 1rem" }}>
-                        <span className="badge" style={{ fontSize: "0.6875rem" }}>{STATUS_LABELS[order.status] || order.status}</span>
-                      </td>
-                      <td style={{ padding: "0.875rem 1rem", fontWeight: 500 }}>{formatPrice(order.totalAmount)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
+          <button type="submit" className="btn btn-primary" disabled={loading}
+            style={{ width: "100%", justifyContent: "center", marginTop: "1rem", background: "#111" }}>
+            {loading ? "Vérification…" : "Connexion au Dashboard"}
+            {!loading && <ArrowRight size={14} />}
+          </button>
+        </form>
+        
+        <div style={{ textAlign: "center", marginTop: "2rem" }}>
+            <Link href={`/${locale}`} style={{ fontSize: "0.75rem", color: "var(--text-muted)", textDecoration: "underline" }}>Retour au site public</Link>
         </div>
       </div>
+
+      <style jsx>{`
+        .admin-auth-container {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem 1rem;
+          background: #000;
+          color: #fff;
+        }
+        .admin-auth-card {
+          width: 100%;
+          max-width: 400px;
+          background: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 8px;
+          padding: 3rem 2.5rem;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .admin-auth-header {
+          text-align: center;
+          margin-bottom: 2.5rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .admin-auth-title {
+          font-family: var(--font-display);
+          font-size: 1.75rem;
+          font-weight: 300;
+          color: #fff;
+          letter-spacing: 0.05em;
+        }
+        .admin-auth-error {
+          background: rgba(200, 60, 60, 0.15);
+          border: 1px solid rgba(200, 60, 60, 0.3);
+          border-radius: 4px;
+          padding: 0.875rem 1rem;
+          font-size: 0.8125rem;
+          color: #ff8080;
+          margin-bottom: 1.5rem;
+          text-align: center;
+        }
+        .auth-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+        }
+        .input-group {
+          position: relative;
+        }
+        .input-field {
+          width: 100%;
+          padding: 1.25rem 1rem 0.5rem;
+          background: #000;
+          border: 1px solid #333;
+          border-radius: 4px;
+          font-size: 0.875rem;
+          color: #fff;
+          transition: border-color 0.2s;
+        }
+        .input-field:focus {
+          outline: none;
+          border-color: var(--gold);
+        }
+        .input-label {
+          position: absolute;
+          left: 1rem;
+          top: 1rem;
+          font-size: 0.8125rem;
+          color: #888;
+          transition: all 0.2s;
+          pointer-events: none;
+        }
+        .input-field:focus ~ .input-label,
+        .input-field:not(:placeholder-shown) ~ .input-label {
+          top: 0.35rem;
+          font-size: 0.625rem;
+          color: var(--gold);
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+        .auth-pwd-toggle {
+          position: absolute;
+          right: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          background: transparent;
+          border: none;
+          color: #888;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.25rem;
+        }
+        .auth-pwd-toggle:hover {
+          color: #fff;
+        }
+      `}</style>
     </div>
   );
 }

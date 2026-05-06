@@ -3,19 +3,30 @@
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { User, Package, Heart, LogOut, Settings } from "lucide-react";
 
 export default function ComptePage({ params }: { params: Promise<{ locale: string }> }) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [locale, setLocale] = useState("fr");
   const [profile, setProfile] = useState<{ name?: string; email?: string; firstName?: string; lastName?: string; phone?: string; createdAt?: string } | null>(null);
 
   useEffect(() => { params.then((p) => setLocale(p.locale)); }, [params]);
+  
   useEffect(() => {
-    fetch("/api/auth/register").then((r) => r.json()).then((d) => setProfile(d.user));
-  }, []);
+    if (status === "unauthenticated" && locale) {
+      router.push(`/${locale}/connexion`);
+    } else if (status === "authenticated") {
+      fetch("/api/auth/register").then((r) => r.json()).then((d) => setProfile(d.user));
+    }
+  }, [status, locale, router]);
 
   const isAdmin = (session?.user as { role?: string })?.role === "ADMIN";
+
+  if (status === "loading" || status === "unauthenticated") {
+    return <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Chargement...</div>;
+  }
 
   return (
     <div style={{ paddingTop: "3rem", paddingBottom: "6rem" }}>
@@ -50,7 +61,7 @@ export default function ComptePage({ params }: { params: Promise<{ locale: strin
             {[
               { icon: <Package size={20} />, label: "Mes commandes", href: `/${locale}/commandes`, desc: "Suivre & gérer" },
               { icon: <Heart size={20} />, label: "Mes favoris", href: `/${locale}/favoris`, desc: "Wishlist" },
-              ...(isAdmin ? [{ icon: <Settings size={20} />, label: "Administration", href: `/${locale}/admin`, desc: "Dashboard admin" }] : []),
+              ...(isAdmin ? [{ icon: <Settings size={20} />, label: "Administration", href: `/${locale}/dashboard`, desc: "Dashboard admin" }] : []),
             ].map((item) => (
               <Link key={item.label} href={item.href} style={{ display: "flex", flexDirection: "column", gap: "0.75rem", padding: "1.25rem", border: "1px solid var(--divider)", borderRadius: 4, color: "var(--text)", transition: "border-color 0.2s, box-shadow 0.2s" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--gold)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-sm)"; }}

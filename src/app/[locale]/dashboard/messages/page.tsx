@@ -22,7 +22,7 @@ export default async function AdminMessagesPage({ params }: { params: Promise<{ 
     <div style={{ paddingTop: "3rem", paddingBottom: "6rem" }}>
       <div className="container-brek">
         <div style={{ marginBottom: "2.5rem" }}>
-          <Link href={`/${locale}/admin`} className="btn btn-ghost btn-sm" style={{ paddingLeft: 0, marginBottom: "0.5rem" }}>
+          <Link href={`/${locale}/dashboard`} className="btn btn-ghost btn-sm" style={{ paddingLeft: 0, marginBottom: "0.5rem" }}>
             ← Retour au Dashboard
           </Link>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.5rem", fontWeight: 300 }}>Messages de contact</h1>

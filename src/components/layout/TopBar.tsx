@@ -30,42 +30,42 @@ interface TopBarProps {
 }
 
 const LOCALES = [
-  { 
-    code: "fr", 
-    label: "FR", 
+  {
+    code: "fr",
+    label: "FR",
     flag: (
       <svg width="20" height="15" viewBox="0 0 3 2">
-        <rect width="3" height="2" fill="#ED2939"/>
-        <rect width="2" height="2" fill="#fff"/>
-        <rect width="1" height="2" fill="#002395"/>
+        <rect width="3" height="2" fill="#ED2939" />
+        <rect width="2" height="2" fill="#fff" />
+        <rect width="1" height="2" fill="#002395" />
       </svg>
-    ) 
+    )
   },
-  { 
-    code: "en", 
-    label: "EN", 
+  {
+    code: "en",
+    label: "EN",
     flag: (
       <svg width="20" height="15" viewBox="0 0 60 30">
         <clipPath id="s">
-          <path d="M0,0 v30 h60 v-30 z"/>
+          <path d="M0,0 v30 h60 v-30 z" />
         </clipPath>
-        <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
-        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6"/>
-        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="4"/>
-        <path d="M30,0 v30 M0,15 h60" stroke="#fff" strokeWidth="10"/>
-        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6"/>
+        <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
+        <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="4" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#fff" strokeWidth="10" />
+        <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" />
       </svg>
-    ) 
+    )
   },
-  { 
-    code: "es", 
-    label: "ES", 
+  {
+    code: "es",
+    label: "ES",
     flag: (
       <svg width="20" height="15" viewBox="0 0 750 500">
-        <rect width="750" height="500" fill="#c60b1e"/>
-        <rect width="750" height="250" y="125" fill="#ffc400"/>
+        <rect width="750" height="500" fill="#c60b1e" />
+        <rect width="750" height="250" y="125" fill="#ffc400" />
       </svg>
-    ) 
+    )
   },
 ];
 
@@ -85,7 +85,7 @@ export function TopBar({ locale }: TopBarProps) {
   const [selectedLocale, setSelectedLocale] = useState(locale);
   const [showCountryOptions, setShowCountryOptions] = useState(false);
   const [showLangOptions, setShowLangOptions] = useState(false);
-  
+
   const langMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +96,7 @@ export function TopBar({ locale }: TopBarProps) {
     setMounted(true);
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
-    
+
     // Forcer le scroll tout en haut au chargement (particulièrement sur la home)
     if (pathname === `/${locale}` || pathname === `/${locale}/`) {
       window.scrollTo(0, 0);
@@ -179,14 +179,14 @@ export function TopBar({ locale }: TopBarProps) {
                 </span>
                 <ChevronDown size={14} className={`topbar__lang-chevron ${langMenuOpen ? "topbar__lang-chevron--open" : ""}`} />
               </button>
-              
+
               {langMenuOpen && (
                 <div className="topbar__dropdown topbar__dropdown--lang-modal">
                   <div className="topbar__modal-content">
                     {/* Country Section */}
                     <div className="topbar__modal-section">
                       <label className="topbar__modal-label">COUNTRY *</label>
-                      <div 
+                      <div
                         className="topbar__modal-select"
                         onClick={() => {
                           setShowCountryOptions(!showCountryOptions);
@@ -201,12 +201,12 @@ export function TopBar({ locale }: TopBarProps) {
                         </span>
                         <ChevronDown size={14} style={{ transform: showCountryOptions ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                       </div>
-                      
+
                       {showCountryOptions && (
                         <div className="topbar__modal-options">
                           {LOCALES.map((l) => (
-                            <div 
-                              key={l.code} 
+                            <div
+                              key={l.code}
                               className={`topbar__modal-option ${selectedLocale === l.code ? 'topbar__modal-option--active' : ''}`}
                               onClick={() => {
                                 setSelectedLocale(l.code);
@@ -223,7 +223,7 @@ export function TopBar({ locale }: TopBarProps) {
                     {/* Language Section */}
                     <div className="topbar__modal-section">
                       <label className="topbar__modal-label">LANGUAGE</label>
-                      <div 
+                      <div
                         className="topbar__modal-select"
                         onClick={() => {
                           setShowLangOptions(!showLangOptions);
@@ -239,8 +239,8 @@ export function TopBar({ locale }: TopBarProps) {
                       {showLangOptions && (
                         <div className="topbar__modal-options">
                           {LOCALES.map((l) => (
-                            <div 
-                              key={l.code} 
+                            <div
+                              key={l.code}
                               className={`topbar__modal-option ${selectedLocale === l.code ? 'topbar__modal-option--active' : ''}`}
                               onClick={() => {
                                 setSelectedLocale(l.code);
@@ -255,9 +255,9 @@ export function TopBar({ locale }: TopBarProps) {
                     </div>
 
                     <div className="topbar__modal-actions">
-                      <Link 
+                      <Link
                         href={getLocalePath(selectedLocale)}
-                        className="topbar__modal-apply" 
+                        className="topbar__modal-apply"
                         onClick={() => setLangMenuOpen(false)}
                       >
                         <span className="topbar__apply-line topbar__apply-line--start" />
@@ -286,9 +286,9 @@ export function TopBar({ locale }: TopBarProps) {
             </button>
 
             {/* Trade Access */}
-            <Link href={`/${locale}/admin`} className="topbar__trade-link">
-              <span className="topbar__trade-dot" />
-              <span className="topbar__trade-text">TRADE ACCESS</span>
+            <Link href={`/${locale}/compte`} className="topbar__trade-link">
+              <span className={`topbar__trade-dot ${mounted && session ? 'topbar__trade-dot--online' : 'topbar__trade-dot--offline'}`} />
+              <span className="topbar__trade-text">Espace Pro</span>
             </Link>
 
             {/* Panier */}
@@ -299,7 +299,7 @@ export function TopBar({ locale }: TopBarProps) {
               id="cart-btn"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
               {mounted && (
                 <span className="topbar__cart-count">
@@ -491,10 +491,18 @@ export function TopBar({ locale }: TopBarProps) {
           .topbar__trade-link { display: flex; }
         }
         .topbar__trade-dot {
-          width: 6px;
-          height: 6px;
-          background: #ff4d4d;
+          width: 8px;
+          height: 8px;
           border-radius: 50%;
+          transition: all 0.4s var(--ease-luxury);
+        }
+        .topbar__trade-dot--offline {
+          background: #ff4d4d;
+          box-shadow: 0 0 10px rgba(255, 77, 77, 0.6);
+        }
+        .topbar__trade-dot--online {
+          background: #22c55e;
+          box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
         }
         .topbar__cart-btn {
           position: relative;
