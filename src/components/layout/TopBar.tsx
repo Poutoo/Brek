@@ -362,7 +362,13 @@ export function TopBar({ locale }: TopBarProps) {
           display: grid;
           grid-template-columns: 1fr auto 1fr;
           align-items: center;
-          padding: 0 1rem;
+          padding: 0 1.5rem;
+        }
+        @media (min-width: 768px) {
+          .topbar__inner { padding: 0 2.5rem; }
+        }
+        @media (min-width: 1200px) {
+          .topbar__inner { padding: 0 8rem; }
         }
         .topbar__left {
           display: flex;

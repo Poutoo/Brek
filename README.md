@@ -2,52 +2,97 @@
 
 > Passementerie & Tissus haut de gamme — Démo académique
 
-## 🚀 Démarrage rapide
+## 🚀 Démarrage rapide (Local)
 
-### Prérequis
+Suivez ces étapes dans l'ordre pour installer et lancer le projet sur votre machine.
+
+### 1. Prérequis
 - [Node.js](https://nodejs.org/) 18+
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- npm
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (pour la base de données PostgreSQL)
+- npm (installé avec Node.js)
 
-### Installation (première fois)
+### 2. Installation et Configuration
 
 ```bash
-# 1. Cloner le dépôt
+# A. Cloner le dépôt
 git clone <url-du-repo>
 cd Brek
 
-# 2. Installer les dépendances
+# B. Installer les dépendances
 npm install
 
-# 3. Configurer les variables d'environnement
+# C. Configurer l'environnement
 cp .env.example .env
-# (les valeurs par défaut fonctionnent avec docker-compose)
-
-# 4. Lancer la BDD + migrer + seeder en une commande
-npm run setup
 ```
 
-### Démarrage quotidien
+### 3. Configuration du fichier `.env`
+Ouvrez le fichier `.env` et vérifiez les variables suivantes :
+1. **DATABASE_URL** : Par défaut, elle est configurée pour fonctionner avec le `docker-compose.yml` du projet.
+2. **NEXTAUTH_SECRET** : Indispensable pour l'authentification. Vous pouvez en générer un via la commande :
+   ```bash
+   npx auth secret
+   # ou
+   openssl rand -base64 32
+   ```
+
+### 4. Lancement de la Base de Données et Initialisation
 
 ```bash
-# Si la BDD n'est pas démarrée
+# A. Démarrer les conteneurs Docker (PostgreSQL + pgAdmin)
 npm run db:start
 
-# Lancer le serveur de développement
+# B. Appliquer les migrations Prisma et seeder la base (en une commande)
+npm run setup
+```
+*Note : La commande `npm run setup` exécute les migrations et remplit la base de données avec les données de test (designers, produits, collections).*
+
+### 5. Lancer le serveur de développement
+
+```bash
 npm run dev
 ```
-
 Accès : **http://localhost:3000**
 
 ---
 
-## 🐳 Docker
+## 🛠️ En cas de problème (Dépannage)
+
+### Problème de connexion à la base de données
+Si vous voyez une erreur `P1001: Can't reach database server` :
+1. Vérifiez que Docker Desktop est bien lancé.
+2. Relancez les conteneurs : `npm run db:stop && npm run db:start`.
+3. Vérifiez que le port `5432` n'est pas déjà utilisé par une autre instance PostgreSQL locale.
+
+### Erreur lors des migrations Prisma
+Si les migrations échouent ou si le schéma est incohérent :
+```bash
+# Réinitialiser complètement la base de données (Attention : supprime les données !)
+npx prisma migrate reset
+```
+
+### Problème de type Prisma Client
+Si vous avez des erreurs TypeScript sur `prisma` :
+```bash
+npm run db:generate
+```
+
+### Problème de cache Next.js
+Si des changements ne sont pas visibles ou si le build échoue bizarrement :
+```bash
+# Supprimer le dossier .next
+rm -rf .next
+npm run dev
+```
+
+---
+
+## 🐳 Docker & Outils
 
 | Commande | Description |
 |---|---|
 | `npm run db:start` | Démarrer PostgreSQL + pgAdmin |
 | `npm run db:stop` | Arrêter les conteneurs |
-| `npm run db:studio` | Ouvrir Prisma Studio |
+| `npm run db:studio` | Interface graphique Prisma pour voir les données |
 
 **pgAdmin** : http://localhost:5050  
 Login : `admin@brek.fr` / `admin`

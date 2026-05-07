@@ -1,8 +1,8 @@
 # gemini.md — Suivi du projet Brek
 
-## Dernière mise à jour : 2026-05-06
+## Dernière mise à jour : 2026-05-07
 
-## État du projet : Phase 1-3 ✅ Complétée | Phase 4 en cours...
+## État du projet : Phase 1-4 ✅ Complétée | Phase 5 en cours...
 
 ---
 
@@ -18,7 +18,7 @@
 
 ## Infrastructure
 - `docker-compose.yml` → PostgreSQL 16 + pgAdmin
-- `.env` / `.env.example` configurés
+- `.env` → Configuré avec `DATABASE_URL` et `NEXTAUTH_SECRET`
 - `prisma/schema.prisma` → schéma complet (User, Product, Designer, Collection, Order, etc.)
 - `prisma/seed.ts` → 3 designers, 3 collections, 10 produits, 3 users, FAQ, newsletter
 - `prisma.config.ts` → datasource URL (Prisma 7 convention)
@@ -37,7 +37,7 @@
 - `Footer` : colonnes + réseaux sociaux (SVG inline pour Instagram/LinkedIn)
 - `ProductCard` : carte produit avec overlay actions
 - `HeroSection` : hero dark avec support vidéo background et stats animées
-- `CollectionsSection` : grille asymétrique (CSS dans globals.css)
+- `CollectionsSlider` : slider horizontal premium pour les collections
 - `FeaturedProductsSection` : produits phares fond sombre
 - `DesignersPreviewSection` : cartes designers
 - `NewsletterSection` : formulaire inscription
