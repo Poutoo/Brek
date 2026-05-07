@@ -360,6 +360,21 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
+<<<<<<< HEAD
+// ─── PROJECT / REALIZATION ───────────────────────────────────────────────────
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   // e.g. "Résidence Privée", "Hôtellerie"
+  image       String
+  description String?  @db.Text
+  active      Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+} 
+=======
 // ─── PAYMENT METHOD ──────────────────────────────────────────────────────────
 
 model PaymentMethod {
@@ -404,3 +419,4 @@ model QuoteItem {
   quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
 }
+>>>>>>> e3fab7c1117a7bd87370682abf63ee189ccb2dcd
