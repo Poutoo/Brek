@@ -23,6 +23,35 @@ interface HeroSectionProps {
 export function HeroSection({ locale, collections }: HeroSectionProps) {
   const [current, setCurrent] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [loadedMedia, setLoadedMedia] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Sécurité : si après 5s rien n'est chargé, on affiche quand même
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleMediaLoad = useCallback((id: string) => {
+    setLoadedMedia((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      
+      // On débloque dès que la première slide est prête
+      if (id === collections[0]?.id) {
+        setTimeout(() => setIsLoaded(true), 800);
+      }
+      return next;
+    });
+  }, [collections]);
 
   const nextSlide = useCallback(() => {
     if (isAnimating) return;
@@ -47,6 +76,33 @@ export function HeroSection({ locale, collections }: HeroSectionProps) {
 
   return (
     <section className="hero" aria-label="Collections Phares">
+      {/* Loader Luxe - Inline styles pour éviter le FOUC */}
+      <div 
+        className={`hero__loader ${isLoaded ? "hero__loader--hidden" : ""}`}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: '#0f0c0a',
+          zIndex: 100,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: isLoaded ? 0 : 1,
+          visibility: isLoaded ? 'hidden' : 'visible',
+          transition: 'opacity 1s cubic-bezier(0.25, 0.1, 0.25, 1), visibility 1s'
+        }}
+      >
+        <div className="hero__loader-content">
+          <div className="hero__loader-brand">
+            <span className="hero__loader-logo">BREK</span>
+            <span className="hero__loader-sub">PARIS</span>
+          </div>
+          <div className="hero__loader-line">
+            <div className="hero__loader-progress" />
+          </div>
+        </div>
+      </div>
+
       {collections.map((col, index) => (
         <div 
           key={col.id} 
@@ -63,6 +119,7 @@ export function HeroSection({ locale, collections }: HeroSectionProps) {
                 loop
                 playsInline
                 className="hero__video"
+                onCanPlayThrough={() => handleMediaLoad(col.id)}
               />
             ) : (
               <Image
@@ -72,6 +129,7 @@ export function HeroSection({ locale, collections }: HeroSectionProps) {
                 priority={index === 0}
                 className="hero__image"
                 style={{ objectFit: "cover" }}
+                onLoadingComplete={() => handleMediaLoad(col.id)}
               />
             )}
             <div className="hero__overlay" />

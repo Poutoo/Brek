@@ -13,6 +13,9 @@ async function main() {
 
   // --- CLEANUP ---
   console.log("🧹 Cleaning up existing data...");
+  await prisma.quoteItem.deleteMany();
+  await prisma.quote.deleteMany();
+  await prisma.paymentMethod.deleteMany();
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.cartItem.deleteMany();
@@ -499,6 +502,53 @@ async function main() {
     });
     console.log("  ✓ Commande DELIVERED pour Marie Dupont");
     console.log("  ✓ Commande SHIPPED pour Jean Martin");
+
+    // Devis
+    console.log("\n📝 Creating demo quote...");
+    await prisma.quote.upsert({
+      where: { quoteNumber: "DEV-DEMO-001" },
+      update: {},
+      create: {
+        quoteNumber: "DEV-DEMO-001",
+        userId: user1.id,
+        status: "PENDING",
+        totalAmount: galon.price * 5 + frange.price * 3,
+        validUntil: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // + 15 jours
+        items: {
+          create: [
+            {
+              productId: galon.id,
+              productName: galon.name,
+              productRef: galon.ref,
+              quantity: 5,
+              unitPrice: galon.price,
+            },
+            {
+              productId: frange.id,
+              productName: frange.name,
+              productRef: frange.ref,
+              quantity: 3,
+              unitPrice: frange.price,
+            },
+          ],
+        },
+      },
+    });
+    console.log("  ✓ Devis PENDING pour Marie Dupont");
+
+    // Cartes bancaires
+    console.log("\n💳 Creating demo payment methods...");
+    await prisma.paymentMethod.create({
+      data: {
+        userId: user1.id,
+        brand: "Visa",
+        last4: "4242",
+        expMonth: 12,
+        expYear: 28,
+        isDefault: true,
+      },
+    });
+    console.log("  ✓ Carte bancaire Visa pour Marie Dupont");
   }
 
   // ─── FAQ ───────────────────────────────────────────────────────────────────
