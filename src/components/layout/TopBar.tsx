@@ -291,7 +291,9 @@ export function TopBar({ locale }: TopBarProps) {
             {/* Trade Access */}
             <Link href={`/${locale}/compte`} className="topbar__trade-link">
               <span className={`topbar__trade-dot ${mounted && session ? 'topbar__trade-dot--online' : 'topbar__trade-dot--offline'}`} />
-              <span className="topbar__trade-text">Espace Pro</span>
+              <span className="topbar__trade-text">
+                {mounted && session?.user?.name ? session.user.name : "Espace Pro"}
+              </span>
             </Link>
 
             {/* Panier */}
