@@ -1,18 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Plus, Edit2, Trash2, Eye, EyeOff, Search } from "lucide-react";
 import { formatPrice, formatStock } from "@/lib/utils";
 
 export default async function AdminProductsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const session = await getServerSession(authOptions);
-  const isAdmin = (session?.user as { role?: string })?.role === "ADMIN";
   const { locale } = await params;
-
-  if (!session || !isAdmin) redirect(`/${locale}/connexion`);
 
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
@@ -21,17 +14,15 @@ export default async function AdminProductsPage({ params }: { params: Promise<{ 
 
   return (
     <div style={{ paddingTop: "3rem", paddingBottom: "6rem" }}>
-      <div className="container-brek">
+      <div className="container-admin">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2.5rem", flexWrap: "wrap", gap: "1rem" }}>
           <div>
-            <Link href={`/${locale}/dashboard`} className="btn btn-ghost btn-sm" style={{ paddingLeft: 0, marginBottom: "0.5rem" }}>
-              ← Retour au Dashboard
-            </Link>
             <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.5rem", fontWeight: 300 }}>Gestion des produits</h1>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>{products.length} produits au total</p>
           </div>
-          <button className="btn btn-primary">
+          <Link href={`/${locale}/dashboard/produits/nouveau`} className="btn btn-primary">
             <Plus size={18} /> Nouveau produit
-          </button>
+          </Link>
         </div>
 
         {/* Barre de recherche/filtres */}
@@ -102,9 +93,9 @@ export default async function AdminProductsPage({ params }: { params: Promise<{ 
                   </td>
                   <td style={{ padding: "1rem", textAlign: "right" }}>
                     <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                      <button className="btn btn-ghost btn-sm" style={{ padding: 8 }} title="Modifier">
+                      <Link href={`/${locale}/dashboard/produits/${product.id}`} className="btn btn-ghost btn-sm" style={{ padding: 8 }} title="Modifier">
                         <Edit2 size={14} />
-                      </button>
+                      </Link>
                       <button className="btn btn-ghost btn-sm" style={{ padding: 8 }} title={product.active ? "Désactiver" : "Activer"}>
                         {product.active ? <EyeOff size={14} /> : <Eye size={14} />}
                       </button>

@@ -1,7 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Search, Eye, Filter } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
@@ -9,11 +6,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 export default async function AdminOrdersPage({ params }: { params: Promise<{ locale: string }> }) {
-  const session = await getServerSession(authOptions);
-  const isAdmin = (session?.user as { role?: string })?.role === "ADMIN";
   const { locale } = await params;
-
-  if (!session || !isAdmin) redirect(`/${locale}/connexion`);
 
   const orders = await prisma.order.findMany({
     orderBy: { createdAt: "desc" },
@@ -43,12 +36,10 @@ export default async function AdminOrdersPage({ params }: { params: Promise<{ lo
 
   return (
     <div style={{ paddingTop: "3rem", paddingBottom: "6rem" }}>
-      <div className="container-brek">
+      <div className="container-admin">
         <div style={{ marginBottom: "2.5rem" }}>
-          <Link href={`/${locale}/dashboard`} className="btn btn-ghost btn-sm" style={{ paddingLeft: 0, marginBottom: "0.5rem" }}>
-            ← Retour au Dashboard
-          </Link>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.5rem", fontWeight: 300 }}>Gestion des commandes</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>{orders.length} commandes enregistrées</p>
         </div>
 
         {/* Filtres */}

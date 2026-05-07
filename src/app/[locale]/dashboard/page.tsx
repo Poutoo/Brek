@@ -1,9 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Package, Users, ShoppingBag, BarChart3, Settings, MessageSquare } from "lucide-react";
+import { Package, Users, ShoppingBag, BarChart3, MessageSquare } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { Metadata } from "next";
 
@@ -13,11 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage({ params }: { params: Promise<{ locale: string }> }) {
-  const session = await getServerSession(authOptions);
-  const isAdmin = (session?.user as { role?: string })?.role === "ADMIN";
   const { locale } = await params;
-
-  if (!session || !isAdmin) redirect(`/${locale}/admin`);
 
   const [productCount, userCount, orderCount, orderStats, contactCount, recentOrders] = await Promise.all([
     prisma.product.count({ where: { active: true } }),

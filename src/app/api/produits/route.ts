@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -51,4 +53,23 @@ export async function GET(req: NextRequest) {
     page,
     totalPages: Math.ceil(total / limit),
   });
+}
+
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if ((session?.user as any)?.role !== "ADMIN") {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+  }
+
+  const body = await req.json();
+
+  try {
+    const product = await prisma.product.create({
+      data: body,
+    });
+    return NextResponse.json(product, { status: 201 });
+  } catch (error) {
+    console.error("Error creating product:", error);
+    return NextResponse.json({ error: "Erreur lors de la création du produit" }, { status: 500 });
+  }
 }
