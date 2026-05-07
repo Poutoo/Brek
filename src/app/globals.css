@@ -899,3 +899,46 @@ details[open] .faq-icon { transform: rotate(45deg); }
   0% { transform: translateX(-100px); }
   100% { transform: translateX(200px); }
 }
+
+
+/* ─── ABOUT PAGE ───────────────────────────────────────────────────────────── */
+.apropos-hero {
+  position: relative;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  background: var(--charcoal);
+  overflow: hidden;
+}
+
+.apropos-hero-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.apropos-hero-content {
+  position: relative;
+  z-index: 10;
+  padding-top: 5rem;
+}
+
+.section-padding {
+  padding: 8rem 0;
+}
+
+.bg-cream {
+  background: var(--cream);
+}
+
+.text-gold {
+  color: var(--gold);
+}
+
+.text-text-muted {
+  color: var(--text-muted);
+}
+
+.bg-charcoal {
+  background: var(--charcoal);
+}
