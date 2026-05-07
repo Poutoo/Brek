@@ -1,85 +1,142 @@
-"use client";
-
-import { useSession, signOut } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { User, Package, Heart, LogOut, Settings } from "lucide-react";
+import { FileText, Package, MapPin } from "lucide-react";
 
-export default function ComptePage({ params }: { params: Promise<{ locale: string }> }) {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [locale, setLocale] = useState("fr");
-  const [profile, setProfile] = useState<{ name?: string; email?: string; firstName?: string; lastName?: string; phone?: string; createdAt?: string } | null>(null);
+export default async function CompteDashboardPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const session = await getServerSession(authOptions);
 
-  useEffect(() => { params.then((p) => setLocale(p.locale)); }, [params]);
-  
-  useEffect(() => {
-    if (status === "unauthenticated" && locale) {
-      router.push(`/${locale}/connexion`);
-    } else if (status === "authenticated") {
-      fetch("/api/auth/register").then((r) => r.json()).then((d) => setProfile(d.user));
-    }
-  }, [status, locale, router]);
-
-  const isAdmin = (session?.user as { role?: string })?.role === "ADMIN";
-
-  if (status === "loading" || status === "unauthenticated") {
-    return <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Chargement...</div>;
+  if (!session?.user) {
+    redirect(`/${locale}/connexion`);
   }
 
-  return (
-    <div style={{ paddingTop: "3rem", paddingBottom: "6rem" }}>
-      <div className="container-brek" style={{ maxWidth: 800 }}>
-        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.5rem", fontWeight: 300, marginBottom: "2.5rem" }}>Mon compte</h1>
+  const user = await prisma.user.findUnique({
+    where: { id: (session.user as any).id },
+    include: {
+      addresses: {
+        where: { isDefault: true },
+        take: 1
+      },
+      orders: {
+        orderBy: { createdAt: "desc" },
+        take: 3,
+        include: { items: true }
+      },
+      quotes: {
+        where: { status: "PENDING" },
+        orderBy: { createdAt: "desc" },
+        take: 3,
+        include: { items: true }
+      }
+    }
+  });
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }}>
-          {/* Profil */}
-          <section style={{ border: "1px solid var(--divider)", borderRadius: 4, padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", marginBottom: "1.5rem" }}>
-              <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--bg-secondary)", border: "2px solid var(--gold)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--gold)" }}>
-                <User size={28} />
+  if (!user) {
+    redirect(`/${locale}/connexion`);
+  }
+
+  const defaultAddress = user.addresses[0];
+  const clientNo = user.id.slice(-6).toUpperCase();
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      <section style={{ border: "1px solid var(--divider)", borderRadius: "4px", padding: "1.5rem" }}>
+        <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.5rem", marginBottom: "1rem" }}>Tableau de bord</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem" }}>
+          <div>
+            <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--gold)", marginBottom: "0.5rem" }}>N° Client</p>
+            <p style={{ fontWeight: 500, fontFamily: "monospace", fontSize: "1.125rem" }}>{clientNo}</p>
+          </div>
+          <div>
+            <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--gold)", marginBottom: "0.5rem" }}>Profil</p>
+            <p>{user.firstName} {user.lastName}</p>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>{user.email}</p>
+          </div>
+          <div>
+            <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--gold)", marginBottom: "0.5rem" }}>Adresse par défaut</p>
+            {defaultAddress ? (
+              <div style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>
+                <p>{defaultAddress.line1}</p>
+                {defaultAddress.line2 && <p>{defaultAddress.line2}</p>}
+                <p>{defaultAddress.postalCode} {defaultAddress.city}</p>
+                <p>{defaultAddress.country}</p>
               </div>
-              <div>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.375rem", fontWeight: 400 }}>{profile?.name || session?.user?.name || "—"}</h2>
-                <p style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>{profile?.email || session?.user?.email}</p>
-                {isAdmin && <span className="badge badge-gold" style={{ marginTop: 4 }}>Administrateur</span>}
-              </div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", fontSize: "0.875rem" }}>
-              {[["Prénom", profile?.firstName], ["Nom", profile?.lastName], ["Email", profile?.email], ["Membre depuis", profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) : "—"]].map(([label, value]) => (
-                <div key={label as string}>
-                  <p style={{ fontSize: "0.6875rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gold)", marginBottom: "0.25rem", fontFamily: "var(--font-body)" }}>{label}</p>
-                  <p style={{ color: "var(--text-muted)" }}>{value || "—"}</p>
+            ) : (
+              <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", fontStyle: "italic" }}>Aucune adresse renseignée</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+        {/* Dernières commandes */}
+        <section>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <Package size={20} color="var(--gold)" /> Dernières commandes
+            </h3>
+            <Link href={`/${locale}/compte/commandes`} style={{ fontSize: "0.875rem", color: "var(--gold)", textDecoration: "underline" }}>
+              Tout voir
+            </Link>
+          </div>
+          
+          {user.orders.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {user.orders.map(order => (
+                <div key={order.id} style={{ border: "1px solid var(--divider)", borderRadius: "4px", padding: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <p style={{ fontWeight: 500 }}>{order.orderNumber}</p>
+                    <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{new Date(order.createdAt).toLocaleDateString("fr-FR")}</p>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <p style={{ fontWeight: 600 }}>{order.totalAmount.toFixed(2)} €</p>
+                    <span className="badge" style={{ fontSize: "0.6875rem", marginTop: "0.25rem", display: "inline-block" }}>{order.status}</span>
+                  </div>
                 </div>
               ))}
             </div>
-          </section>
+          ) : (
+            <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", fontStyle: "italic", padding: "1rem", border: "1px dashed var(--divider)", borderRadius: "4px", textAlign: "center" }}>
+              Aucune commande récente
+            </p>
+          )}
+        </section>
 
-          {/* Navigation rapide */}
-          <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "1rem" }}>
-            {[
-              { icon: <Package size={20} />, label: "Mes commandes", href: `/${locale}/commandes`, desc: "Suivre & gérer" },
-              { icon: <Heart size={20} />, label: "Mes favoris", href: `/${locale}/favoris`, desc: "Wishlist" },
-              ...(isAdmin ? [{ icon: <Settings size={20} />, label: "Administration", href: `/${locale}/dashboard`, desc: "Dashboard admin" }] : []),
-            ].map((item) => (
-              <Link key={item.label} href={item.href} style={{ display: "flex", flexDirection: "column", gap: "0.75rem", padding: "1.25rem", border: "1px solid var(--divider)", borderRadius: 4, color: "var(--text)", transition: "border-color 0.2s, box-shadow 0.2s" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--gold)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-sm)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--divider)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}>
-                <span style={{ color: "var(--gold)" }}>{item.icon}</span>
-                <div>
-                  <p style={{ fontWeight: 500, fontSize: "0.9375rem" }}>{item.label}</p>
-                  <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{item.desc}</p>
+        {/* Devis en cours */}
+        <section>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <FileText size={20} color="var(--gold)" /> Devis en cours
+            </h3>
+            <Link href={`/${locale}/compte/commandes`} style={{ fontSize: "0.875rem", color: "var(--gold)", textDecoration: "underline" }}>
+              Tout voir
+            </Link>
+          </div>
+          
+          {user.quotes.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {user.quotes.map(quote => (
+                <div key={quote.id} style={{ border: "1px solid var(--divider)", borderRadius: "4px", padding: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <p style={{ fontWeight: 500 }}>{quote.quoteNumber}</p>
+                    <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{new Date(quote.createdAt).toLocaleDateString("fr-FR")}</p>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <p style={{ fontWeight: 600 }}>{quote.totalAmount.toFixed(2)} €</p>
+                    <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{quote.items.length} article(s)</p>
+                  </div>
                 </div>
-              </Link>
-            ))}
-          </section>
-
-          <button className="btn btn-secondary" style={{ alignSelf: "flex-start" }}
-            onClick={() => signOut({ callbackUrl: `/${locale}` })} id="logout-btn" aria-label="Se déconnecter">
-            <LogOut size={16} /> Se déconnecter
-          </button>
-        </div>
+              ))}
+            </div>
+          ) : (
+            <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", fontStyle: "italic", padding: "1rem", border: "1px dashed var(--divider)", borderRadius: "4px", textAlign: "center" }}>
+              Aucun devis en cours
+            </p>
+          )}
+        </section>
       </div>
     </div>
   );

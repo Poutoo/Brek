@@ -1,8 +1,8 @@
 # gemini.md — Suivi du projet Brek
 
-## Dernière mise à jour : 2026-05-07
+## Dernière mise à jour : 2026-05-07 (Refonte de l'Espace Pro /compte)
 
-## État du projet : Phase 1-4 ✅ Complétée | Phase 5 en cours...
+## État du projet : Phase 1-5 ✅ Complétées | Phase 6 en cours...
 
 ---
 
@@ -19,8 +19,8 @@
 ## Infrastructure
 - `docker-compose.yml` → PostgreSQL 16 + pgAdmin
 - `.env` → Configuré avec `DATABASE_URL` et `NEXTAUTH_SECRET`
-- `prisma/schema.prisma` → schéma complet (User, Product, Designer, Collection, Order, etc.)
-- `prisma/seed.ts` → 3 designers, 3 collections, 10 produits, 3 users, FAQ, newsletter
+- `prisma/schema.prisma` → schéma complet (User, Product, Designer, Collection, Order, Quote, PaymentMethod, etc.)
+- `prisma/seed.ts` → 3 designers, 3 collections, 10 produits, 3 users, FAQ, newsletter, devis, cartes bancaires
 - `prisma.config.ts` → datasource URL (Prisma 7 convention)
 - `@prisma/adapter-pg` + `pg` → adaptateur requis par Prisma 7 wasm engine
 
@@ -36,7 +36,7 @@
 - `CartDrawer` : panier latéral avec quantités en mètres
 - `Footer` : colonnes + réseaux sociaux (SVG inline pour Instagram/LinkedIn)
 - `ProductCard` : carte produit avec overlay actions
-- `HeroSection` : hero dark avec support vidéo background et stats animées
+- `HeroSection` : hero dark avec support vidéo background, stats animées et **loader Luxe** (détection chargement média)
 - `CollectionsSlider` : slider horizontal premium pour les collections
 - `FeaturedProductsSection` : produits phares fond sombre
 - `DesignersPreviewSection` : cartes designers
@@ -64,7 +64,11 @@
 | `/[locale]/checkout` | ✅ (simulation paiement) |
 | `/[locale]/commandes` | ✅ (liste + annulation) |
 | `/[locale]/favoris` | ✅ |
-| `/[locale]/compte` | ✅ |
+| `/[locale]/compte` | ✅ (Dashboard) |
+| `/[locale]/compte/adresses` | ✅ |
+| `/[locale]/compte/paiement` | ✅ |
+| `/[locale]/compte/commandes` | ✅ (Commandes & devis) |
+| `/[locale]/compte/parametres`| ✅ |
 | `/[locale]/admin` | ✅ (dashboard KPIs) |
 | `/[locale]/panier` | ✅ (via CartDrawer) |
 | `/[locale]/newsletter` | ✅ |
@@ -82,6 +86,10 @@
 - `GET/POST /api/newsletter` — abonnement + articles
 - `POST /api/contact` — messages contact
 - `GET/POST /api/favoris` — toggle favoris
+- `GET/POST /api/adresses` — gestion adresses
+- `GET/POST /api/paiement` — gestion cartes bancaires
+- `GET /api/devis` — liste des devis en cours
+- `PUT /api/user` — mise à jour infos/sécurité
 - NextAuth `/api/auth/[...nextauth]`
 
 ## Assets
