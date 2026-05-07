@@ -29,13 +29,32 @@
 - `PrismaClient` **requiert** un adaptateur driver : `@prisma/adapter-pg` + `Pool`
 - Le script `seed.ts` et `src/lib/prisma.ts` utilisent tous les deux cet adaptateur
 
-## Migration Tailwind (Phase 7)
-- Migration massive des styles `<style jsx>` vers Tailwind CSS.
+## Migration Tailwind (Phase 7) ✅
+- Migration massive des styles `<style jsx>` vers Tailwind CSS terminée pour tous les composants.
 - Composants migrés : `TopBar`, `SearchOverlay`, `SidebarMenu`, `Footer`, `CartDrawer`, `NewsletterSection`, `Modal`, `ToastContainer`, `Button`, `ProductCard`, `AddressForm`, `PaymentForm`, `AuthForm`, `ProductForm`, `ProductDetailClient`.
-- Suppression des injections de styles dynamiques (`Footer.tsx`, `Button.tsx`).
-- Utilisation systématique de `group` et `group-hover` pour les animations complexes.
-- Remplacement des floating labels par le pattern Tailwind `peer`.
-- Correction des animations complexes (Sidebar, Search, Cart) via des classes CSS nommées pour éviter les bugs de parsing JIT.
+- Correction des animations complexes via des classes CSS nommées dans `globals.css`.
+- Standardisation des formulaires avec le pattern `peer`.
+
+## Composants créés / mis à jour
+- `TopBar` : ajout du menu de langues et correction du spacer.
+- `SidebarMenu` : design affiné, largeur réduite (480px), intégration des sections Projets, À Propos, Newsletter.
+- `DesignersPreviewSection` : correction du chargement des images via le seed.
+
+## Pages créées / renommées
+| Route | Statut |
+|---|---|
+| `/[locale]/apropos` | ✅ (Anciennement a-propos) |
+| `/[locale]/projet` | ✅ (Anciennement projets) |
+| `/[locale]/collections` | ✅ |
+| `/[locale]/designers` | ✅ |
+| `/[locale]/produits` | ✅ |
+| `/[locale]/checkout` | ✅ |
+| `/[locale]/dashboard` | ✅ |
+
+## APIs & BDD
+- Modèle `Project` ajouté au `schema.prisma`.
+- Correction du script `seed.ts` (cleanup des designers et projets, correction des contraintes d'unicité).
+- Migration Prisma effectuée.
 
 ## Composants créés
 - `TopBar` : navigation responsive (mobile: hamburger / desktop: nav inline)
