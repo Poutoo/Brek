@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, ShoppingBag, Eye } from "lucide-react";
+import { Heart, ShoppingBag, ArrowUpRight } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ProductCardProps {
   product: {
@@ -33,7 +33,12 @@ export function ProductCard({
 }: ProductCardProps) {
   const { addItem } = useCartStore();
   const [added, setAdded] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const inStock = product.stock > 0;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -62,200 +67,100 @@ export function ProductCard({
     onToggleFavorite?.();
   };
 
-  return (
-    <article className="card card-product" style={{ position: "relative" }}>
+  // URL de sécurité
+  const safeLocale = locale || "fr";
+  const productUrl = `/${safeLocale}/produits/${product.slug || product.id}`;
 
-        {/* Image */}
-        <div className="product-image-wrapper">
+  if (!mounted) return null;
+
+  return (
+    <div className="relative h-full">
+      <article className="group relative bg-white border border-[var(--divider)] transition-all duration-400 ease-[var(--ease-luxury)] flex flex-col h-full rounded-sm overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:border-[var(--gold)]">
+        {/* 1. Image Section */}
+        <div className="relative aspect-[4/5] w-full bg-[var(--bg-secondary)] overflow-hidden z-[1]">
           <Image
             src={product.images[0] || "/assets/placeholder.png"}
             alt={product.name}
             fill
-            className="product-img"
+            className="object-cover transition-transform duration-600 ease-[var(--ease-luxury)] group-hover:scale-110"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
-          {/* Badges */}
-          <div className="product-badges">
+          
+          <div className="absolute top-4 left-4 flex flex-col gap-2 z-[2]">
             {product.featured && (
-              <span className="badge badge-gold">Sélection</span>
+              <span className="text-[10px] tracking-widest px-2.5 py-1.5 font-bold rounded-sm bg-[var(--gold)] text-white">
+                SÉLECTION
+              </span>
             )}
             {!inStock && (
-              <span className="badge badge-red">Rupture</span>
+              <span className="text-[10px] tracking-widest px-2.5 py-1.5 font-bold rounded-sm bg-red-500 text-white">
+                RUPTURE
+              </span>
             )}
           </div>
 
-          {/* Overlay actions */}
-          <div className="product-overlay" style={{ zIndex: 10 }}>
-            <div className="product-actions">
+          <div className="absolute top-4 right-4 flex flex-col gap-2 transition-all duration-300 ease-[var(--ease-luxury)] translate-x-5 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 z-[30]">
+            <button
+              className="w-9 h-9 bg-white border-none flex items-center justify-center text-[var(--text)] cursor-pointer transition-colors shadow-md rounded hover:bg-[var(--gold)] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleAddToCart}
+              disabled={!inStock}
+              title={inStock ? "Ajouter au panier" : "Épuisé"}
+            >
+              <ShoppingBag size={18} />
+            </button>
+            {onToggleFavorite && (
               <button
-                className="product-action-btn"
-                onClick={handleAddToCart}
-                aria-label={`Ajouter ${product.name} au panier`}
-                disabled={!inStock}
-                title={inStock ? "Ajouter au panier" : "Rupture de stock"}
+                className={`w-9 h-9 bg-white border-none flex items-center justify-center cursor-pointer transition-colors shadow-md rounded hover:bg-[var(--gold)] hover:text-white ${isFavorite ? "text-[var(--gold)] hover:text-white" : "text-[var(--text)]"}`}
+                onClick={handleToggleFav}
+                title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
               >
-                <ShoppingBag size={16} />
+                <Heart size={18} fill={isFavorite ? "currentColor" : "none"} />
               </button>
-              {onToggleFavorite && (
-                <button
-                  className={`product-action-btn ${isFavorite ? "product-action-btn--active" : ""}`}
-                  onClick={handleToggleFav}
-                  aria-label={isFavorite ? `Retirer ${product.name} des favoris` : `Ajouter ${product.name} aux favoris`}
-                  title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-                >
-                  <Heart size={16} fill={isFavorite ? "currentColor" : "none"} />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Info */}
-        <div className="product-info">
-          {product.collectionName && (
-            <p className="product-collection">{product.collectionName}</p>
-          )}
-          <h3 className="product-name">{product.name}</h3>
-          <div className="product-footer">
-            <span className="product-price">
-              {formatPrice(product.price)}
-              <span className="product-unit"> / {product.unit}</span>
-            </span>
-            {inStock ? (
-              <span className="product-stock">{product.stock} m</span>
-            ) : (
-              <span className="product-stock product-stock--empty">Épuisé</span>
             )}
           </div>
-          <p className="product-ref">Réf. {product.ref}</p>
         </div>
 
-        {/* Lien global (Overlay Link) */}
+        {/* 2. Info Section */}
+        <div className="p-5 flex flex-col gap-2 flex-grow z-[1]">
+          {product.collectionName && (
+            <p className="text-[10px] tracking-[0.15em] uppercase text-[var(--gold)] font-semibold m-0">
+              {product.collectionName}
+            </p>
+          )}
+          <h3 className="font-serif text-lg leading-tight font-normal text-[var(--text)] m-0.5">
+            {product.name}
+          </h3>
+          <div className="mt-auto flex items-baseline gap-1">
+            <span className="text-base font-semibold text-[var(--text)]">
+              {formatPrice(product.price)}
+            </span>
+            <span className="text-xs text-[var(--text-muted)]"> / {product.unit}</span>
+          </div>
+          <p className="text-[10px] text-[var(--text-muted)] tracking-wider m-1">
+            REF. {product.ref}
+          </p>
+        </div>
+
+        {/* 3. Global Overlay Link (Z-INDEX 20) */}
         <Link 
-          href={`/${locale}/produits/${product.slug}`} 
-          className="product-full-link"
+          href={productUrl} 
+          className="absolute inset-0 z-[20] cursor-pointer block"
           aria-label={`Voir les détails de ${product.name}`}
-        />
+        >
+          <span className="sr-only">Détails</span>
+          <div className="absolute bottom-4 left-4 bg-white px-2.5 py-1 text-[10px] font-bold tracking-widest text-[var(--text)] flex items-center gap-1 opacity-0 translate-y-2.5 transition-all duration-300 ease-[var(--ease-luxury)] rounded-sm shadow-md group-hover:opacity-100 group-hover:translate-y-0">
+             VOIR <ArrowUpRight size={12} />
+          </div>
+        </Link>
 
-      {/* Add to cart feedback */}
-      {added && (
-        <div className="product-added" aria-live="polite">
-          ✓ Ajouté au panier
-        </div>
-      )}
-
-      <style jsx>{`
-        .product-badges {
-          position: absolute;
-          top: 0.75rem;
-          left: 0.75rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-          z-index: 2;
-        }
-        .product-actions {
-          display: flex;
-          gap: 0.5rem;
-        }
-        .product-action-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 36px;
-          height: 36px;
-          background: rgba(255,253,247,0.9);
-          border: none;
-          border-radius: 2px;
-          color: var(--charcoal);
-          cursor: pointer;
-          transition: all 0.2s;
-          backdrop-filter: blur(4px);
-        }
-        .product-action-btn:hover {
-          background: var(--gold);
-          color: var(--charcoal);
-        }
-        .product-action-btn--active {
-          background: var(--gold);
-          color: var(--charcoal);
-        }
-        .product-action-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-        .product-info {
-          padding: 0.875rem;
-        }
-        .product-collection {
-          font-size: 0.6875rem;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: var(--gold);
-          margin-bottom: 0.25rem;
-        }
-        .product-name {
-          font-family: var(--font-display);
-          font-size: 1rem;
-          font-weight: 400;
-          color: var(--text);
-          margin-bottom: 0.5rem;
-          line-height: 1.3;
-          overflow: hidden;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-        }
-        .product-footer {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 0.25rem;
-        }
-        .product-price {
-          font-size: 0.9375rem;
-          font-weight: 500;
-          color: var(--text);
-        }
-        .product-unit {
-          font-size: 0.75rem;
-          color: var(--text-muted);
-          font-weight: 400;
-        }
-        .product-stock {
-          font-size: 0.75rem;
-          color: #16a34a;
-        }
-        .product-stock--empty {
-          color: #c83c3c;
-        }
-        .product-ref {
-          font-size: 0.6875rem;
-          color: var(--text-muted);
-          letter-spacing: 0.04em;
-        }
-        .product-added {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          background: var(--gold);
-          color: var(--charcoal);
-          font-size: 0.75rem;
-          font-weight: 600;
-          letter-spacing: 0.05em;
-          text-align: center;
-          padding: 0.5rem;
-          animation: fadeInUp 0.2s var(--ease-luxury);
-          z-index: 15;
-        }
-        .product-full-link {
-          position: absolute;
-          inset: 0;
-          z-index: 5;
-        }
-        :global(.product-img) { object-fit: cover; }
-      `}</style>
-    </article>
+        {/* Feedback Ajout */}
+        {added && (
+          <div className="absolute inset-0 bg-white/90 flex items-center justify-center font-bold text-xs tracking-[0.2em] text-[var(--gold)] z-[40] animate-[fadeIn_0.3s_ease]">
+            ✓ AJOUTÉ
+          </div>
+        )}
+      </article>
+    </div>
   );
 }
+

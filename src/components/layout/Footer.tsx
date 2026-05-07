@@ -38,240 +38,72 @@ export function Footer({ locale }: FooterProps) {
   ];
 
   return (
-    <footer className="footer" role="contentinfo">
+    <footer className="bg-[var(--charcoal)] text-[var(--cream)] mt-24" role="contentinfo">
       {/* Top section */}
-      <div className="footer__top container-brek">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-10 lg:px-32 pt-16 pb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-10">
         {/* Brand */}
-        <div className="footer__brand">
-          <Link href={`/${locale}`} className="footer__logo">
-            <span className="footer__logo-text">BREK</span>
-            <span className="footer__logo-sub">PARIS</span>
+        <div className="flex flex-col">
+          <Link href={`/${locale}`} className="inline-flex flex-col mb-4 no-underline group">
+            <span className="font-serif text-2xl font-semibold tracking-[0.25em] text-[var(--cream)] leading-none transition-colors group-hover:text-[var(--gold)]">BREK</span>
+            <span className="text-[0.5rem] tracking-[0.35em] uppercase text-[var(--gold)] mt-0.5">PARIS</span>
           </Link>
-          <p className="footer__tagline">
+          <p className="text-[0.8125rem] text-[var(--cream)]/50 leading-relaxed max-w-[240px] mb-5">
             L&apos;excellence de la passementerie française depuis 1987
           </p>
-          <div className="footer__social">
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer__social-link"
-              aria-label="Suivez Brek sur Instagram"
-            >
-              <InstagramIcon />
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer__social-link"
-              aria-label="Suivez Brek sur LinkedIn"
-            >
-              <LinkedinIcon />
-            </a>
-            <a
-              href={`/${locale}/contact`}
-              className="footer__social-link"
-              aria-label="Contacter Brek par email"
-            >
-              <Mail size={18} />
-            </a>
+          <div className="flex gap-2.5">
+            {[
+              { icon: <InstagramIcon />, label: "Instagram", href: "https://instagram.com" },
+              { icon: <LinkedinIcon />, label: "LinkedIn", href: "https://linkedin.com" },
+              { icon: <Mail size={18} />, label: "Email", href: `/${locale}/contact` }
+            ].map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target={social.href.startsWith("http") ? "_blank" : undefined}
+                rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="flex items-center justify-center w-9 h-9 border border-[var(--cream)]/15 rounded-sm text-[var(--cream)]/50 transition-all hover:border-[var(--gold)] hover:text-[var(--gold)]"
+                aria-label={social.label}
+              >
+                {social.icon}
+              </a>
+            ))}
           </div>
         </div>
 
         {/* Colonnes */}
-        <div className="footer__col">
-          <h3 className="footer__col-title">Collections</h3>
-          <ul className="footer__links" role="list">
-            {collections.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className="footer__link">{link.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="footer__col">
-          <h3 className="footer__col-title">Designers</h3>
-          <ul className="footer__links" role="list">
-            {designers.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className="footer__link">{link.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="footer__col">
-          <h3 className="footer__col-title">La Maison</h3>
-          <ul className="footer__links" role="list">
-            {company.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className="footer__link">{link.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="footer__col">
-          <h3 className="footer__col-title">Informations</h3>
-          <ul className="footer__links" role="list">
-            {legal.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className="footer__link">{link.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {[
+          { title: "Collections", links: collections },
+          { title: "Designers", links: designers },
+          { title: "La Maison", links: company },
+          { title: "Informations", links: legal }
+        ].map((col) => (
+          <div key={col.title} className="flex flex-col">
+            <h3 className="text-[0.6875rem] tracking-widest uppercase text-[var(--gold)] mb-4 font-medium">{col.title}</h3>
+            <ul className="flex flex-col gap-2.5 list-none p-0 m-0" role="list">
+              {col.links.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-[0.8125rem] text-[var(--cream)]/55 no-underline transition-colors hover:text-[var(--cream)] leading-tight">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
 
       {/* Gold divider */}
-      <div className="footer__divider" aria-hidden="true" />
+      <div className="h-px bg-gradient-to-r from-transparent via-[rgba(201,168,76,0.3)] to-transparent" aria-hidden="true" />
 
       {/* Bottom */}
-      <div className="footer__bottom container-brek">
-        <p className="footer__copy">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-10 lg:px-32 py-6 flex flex-col md:flex-row items-center justify-between gap-1.5 text-center md:text-left">
+        <p className="text-[0.75rem] text-[var(--cream)]/35 m-0">
           © {currentYear} Brek Paris. Tous droits réservés.
         </p>
-        <p className="footer__made">
+        <p className="text-[0.6875rem] tracking-widest text-[var(--gold)]/50 uppercase m-0">
           Passementerie & Tissus de Luxe — France
         </p>
       </div>
     </footer>
   );
-}
-
-// Styles intégrés pour éviter les conflits avec les CSS modules
-const footerStyles = `
-  .footer {
-    background: var(--charcoal);
-    color: var(--cream);
-    margin-top: 6rem;
-  }
-  .footer__top {
-    padding-top: 4rem;
-    padding-bottom: 3rem;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-  }
-  @media (min-width: 640px) {
-    .footer__top { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (min-width: 1024px) {
-    .footer__top { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; }
-  }
-  .footer__brand {}
-  .footer__logo {
-    display: inline-flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-  }
-  .footer__logo-text {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 600;
-    letter-spacing: 0.25em;
-    color: var(--cream);
-    line-height: 1;
-  }
-  .footer__logo-sub {
-    font-size: 0.5rem;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-top: 2px;
-  }
-  .footer__tagline {
-    font-size: 0.8125rem;
-    color: rgba(255,253,247,0.5);
-    line-height: 1.6;
-    max-width: 240px;
-    margin-bottom: 1.25rem;
-  }
-  .footer__social {
-    display: flex;
-    gap: 0.625rem;
-  }
-  .footer__social-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: 1px solid rgba(255,253,247,0.15);
-    border-radius: 2px;
-    color: rgba(255,253,247,0.5);
-    transition: all 0.2s;
-  }
-  .footer__social-link:hover {
-    border-color: var(--gold);
-    color: var(--gold);
-  }
-  .footer__col {}
-  .footer__col-title {
-    font-size: 0.6875rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1rem;
-    font-weight: 500;
-    font-family: var(--font-body);
-  }
-  .footer__links {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-  }
-  .footer__link {
-    font-size: 0.8125rem;
-    color: rgba(255,253,247,0.55);
-    transition: color 0.2s;
-    line-height: 1.4;
-  }
-  .footer__link:hover { color: var(--cream); }
-  .footer__divider {
-    height: 1px;
-    background: linear-gradient(to right, transparent 0%, rgba(201,168,76,0.3) 30%, rgba(201,168,76,0.3) 70%, transparent 100%);
-  }
-  .footer__bottom {
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-    align-items: center;
-    text-align: center;
-  }
-  @media (min-width: 768px) {
-    .footer__bottom {
-      flex-direction: row;
-      justify-content: space-between;
-      text-align: left;
-    }
-  }
-  .footer__copy {
-    font-size: 0.75rem;
-    color: rgba(255,253,247,0.35);
-  }
-  .footer__made {
-    font-size: 0.6875rem;
-    letter-spacing: 0.08em;
-    color: rgba(201,168,76,0.5);
-    text-transform: uppercase;
-  }
-`;
-
-// Injecter les styles dans le head via un style tag
-if (typeof document !== "undefined") {
-  const existing = document.getElementById("footer-styles");
-  if (!existing) {
-    const style = document.createElement("style");
-    style.id = "footer-styles";
-    style.textContent = footerStyles;
-    document.head.appendChild(style);
-  }
 }

@@ -85,53 +85,81 @@ export function AuthForm({ locale, mode }: AuthFormProps) {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
+    <div className="min-h-[calc(100vh-var(--nav-height))] flex items-center justify-center py-8 px-4 bg-[var(--bg-secondary)]">
+      <div className="w-full max-w-[440px] bg-[var(--bg-card)] border border-[var(--divider)] rounded-sm p-10 shadow-md">
         {/* Header */}
-        <div className="auth-header">
-          <Link href={`/${locale}`} className="auth-logo">BREK <small>PARIS</small></Link>
-          <h1 className="auth-title">
+        <div className="text-center mb-8">
+          <Link href={`/${locale}`} className="inline-flex flex-col items-center font-serif text-[1.25rem] font-semibold tracking-[0.2em] text-[var(--text)] mb-6 no-underline">
+            BREK 
+            <small className="text-[0.45rem] tracking-[0.35em] text-[var(--gold)] mt-0.5 font-normal font-body italic-none">
+              PARIS
+            </small>
+          </Link>
+          <h1 className="font-serif text-[1.75rem] font-normal text-[var(--text)] m-0">
             {mode === "login" ? t("login_title") : t("register_title")}
           </h1>
         </div>
 
         {/* Erreur */}
         {error && (
-          <div className="auth-error" role="alert">
+          <div className="bg-red-500/10 border border-red-500/20 rounded-sm py-3 px-4 text-[0.8125rem] text-red-600 mb-5" role="alert">
             {error}
           </div>
         )}
 
         {/* Formulaire */}
-        <form onSubmit={mode === "login" ? handleLogin : handleRegister} className="auth-form" noValidate>
+        <form onSubmit={mode === "login" ? handleLogin : handleRegister} className="flex flex-col gap-4" noValidate>
           {mode === "register" && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem" }}>
-              <div className="input-group">
-                <input type="text" name="firstName" id="firstName" value={form.firstName}
-                  onChange={handleChange} className="input-field" placeholder=" " required />
-                <label htmlFor="firstName" className="input-label">{t("first_name")}</label>
+            <div className="grid grid-cols-2 gap-3.5">
+              <div className="relative">
+                <input 
+                  type="text" name="firstName" id="firstName" value={form.firstName}
+                  onChange={handleChange} 
+                  className="w-full px-4 pt-4 pb-2 font-body text-[0.9375rem] bg-[var(--bg-card)] border border-[var(--divider)] rounded-sm outline-none transition-colors duration-200 focus:border-[var(--gold)] peer placeholder:text-transparent" 
+                  placeholder=" " required 
+                />
+                <label htmlFor="firstName" className="absolute top-1/2 left-4 -translate-y-1/2 text-sm text-[var(--text-muted)] pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:text-[var(--gold)] peer-focus:tracking-wider peer-focus:uppercase peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-[11px] peer-[:not(:placeholder-shown)]:text-[var(--gold)] peer-[:not(:placeholder-shown)]:tracking-wider peer-[:not(:placeholder-shown)]:uppercase">
+                  {t("first_name")}
+                </label>
               </div>
-              <div className="input-group">
-                <input type="text" name="lastName" id="lastName" value={form.lastName}
-                  onChange={handleChange} className="input-field" placeholder=" " required />
-                <label htmlFor="lastName" className="input-label">{t("last_name")}</label>
+              <div className="relative">
+                <input 
+                  type="text" name="lastName" id="lastName" value={form.lastName}
+                  onChange={handleChange} 
+                  className="w-full px-4 pt-4 pb-2 font-body text-[0.9375rem] bg-[var(--bg-card)] border border-[var(--divider)] rounded-sm outline-none transition-colors duration-200 focus:border-[var(--gold)] peer placeholder:text-transparent" 
+                  placeholder=" " required 
+                />
+                <label htmlFor="lastName" className="absolute top-1/2 left-4 -translate-y-1/2 text-sm text-[var(--text-muted)] pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:text-[var(--gold)] peer-focus:tracking-wider peer-focus:uppercase peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-[11px] peer-[:not(:placeholder-shown)]:text-[var(--gold)] peer-[:not(:placeholder-shown)]:tracking-wider peer-[:not(:placeholder-shown)]:uppercase">
+                  {t("last_name")}
+                </label>
               </div>
             </div>
           )}
 
-          <div className="input-group">
-            <input type="email" name="email" id="email" value={form.email}
-              onChange={handleChange} className="input-field" placeholder=" " required
-              autoComplete="email" />
-            <label htmlFor="email" className="input-label">{t("email")}</label>
+          <div className="relative">
+            <input 
+              type="email" name="email" id="email" value={form.email}
+              onChange={handleChange} 
+              className="w-full px-4 pt-4 pb-2 font-body text-[0.9375rem] bg-[var(--bg-card)] border border-[var(--divider)] rounded-sm outline-none transition-colors duration-200 focus:border-[var(--gold)] peer placeholder:text-transparent" 
+              placeholder=" " required
+              autoComplete="email" 
+            />
+            <label htmlFor="email" className="absolute top-1/2 left-4 -translate-y-1/2 text-sm text-[var(--text-muted)] pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:text-[var(--gold)] peer-focus:tracking-wider peer-focus:uppercase peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-[11px] peer-[:not(:placeholder-shown)]:text-[var(--gold)] peer-[:not(:placeholder-shown)]:tracking-wider peer-[:not(:placeholder-shown)]:uppercase">
+              {t("email")}
+            </label>
           </div>
 
-          <div className="input-group" style={{ position: "relative" }}>
-            <input type={showPwd ? "text" : "password"} name="password" id="password"
-              value={form.password} onChange={handleChange} className="input-field"
-              placeholder=" " required autoComplete={mode === "login" ? "current-password" : "new-password"} />
-            <label htmlFor="password" className="input-label">{t("password")}</label>
-            <button type="button" className="auth-pwd-toggle"
+          <div className="relative">
+            <input 
+              type={showPwd ? "text" : "password"} name="password" id="password"
+              value={form.password} onChange={handleChange} 
+              className="w-full px-4 pt-4 pb-2 font-body text-[0.9375rem] bg-[var(--bg-card)] border border-[var(--divider)] rounded-sm outline-none transition-colors duration-200 focus:border-[var(--gold)] peer placeholder:text-transparent"
+              placeholder=" " required autoComplete={mode === "login" ? "current-password" : "new-password"} 
+            />
+            <label htmlFor="password" className="absolute top-1/2 left-4 -translate-y-1/2 text-sm text-[var(--text-muted)] pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:text-[var(--gold)] peer-focus:tracking-wider peer-focus:uppercase peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-[11px] peer-[:not(:placeholder-shown)]:text-[var(--gold)] peer-[:not(:placeholder-shown)]:tracking-wider peer-[:not(:placeholder-shown)]:uppercase">
+              {t("password")}
+            </label>
+            <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[var(--text-muted)] cursor-pointer flex items-center justify-center p-1"
               onClick={() => setShowPwd(!showPwd)}
               aria-label={showPwd ? "Masquer le mot de passe" : "Afficher le mot de passe"}>
               {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -139,128 +167,44 @@ export function AuthForm({ locale, mode }: AuthFormProps) {
           </div>
 
           {mode === "register" && (
-            <div className="input-group">
-              <input type="password" name="confirmPassword" id="confirmPassword"
-                value={form.confirmPassword} onChange={handleChange} className="input-field"
-                placeholder=" " required autoComplete="new-password" />
-              <label htmlFor="confirmPassword" className="input-label">{t("confirm_password")}</label>
+            <div className="relative">
+              <input 
+                type="password" name="confirmPassword" id="confirmPassword"
+                value={form.confirmPassword} onChange={handleChange} 
+                className="w-full px-4 pt-4 pb-2 font-body text-[0.9375rem] bg-[var(--bg-card)] border border-[var(--divider)] rounded-sm outline-none transition-colors duration-200 focus:border-[var(--gold)] peer placeholder:text-transparent"
+                placeholder=" " required autoComplete="new-password" 
+              />
+              <label htmlFor="confirmPassword" className="absolute top-1/2 left-4 -translate-y-1/2 text-sm text-[var(--text-muted)] pointer-events-none transition-all duration-200 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:text-[var(--gold)] peer-focus:tracking-wider peer-focus:uppercase peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:translate-y-0 peer-[:not(:placeholder-shown)]:text-[11px] peer-[:not(:placeholder-shown)]:text-[var(--gold)] peer-[:not(:placeholder-shown)]:tracking-wider peer-[:not(:placeholder-shown)]:uppercase">
+                {t("confirm_password")}
+              </label>
             </div>
           )}
 
-          <button type="submit" className="btn btn-primary" disabled={loading}
-            style={{ width: "100%", justifyContent: "center", marginTop: "0.5rem" }}>
+          <button type="submit" className="bg-[var(--gold)] text-white w-full py-4 px-6 font-bold text-[0.8125rem] tracking-widest uppercase transition-all hover:bg-[var(--gold)]/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 rounded-sm" disabled={loading}>
             {loading ? "Chargement…" : (mode === "login" ? t("login_cta") : t("register_cta"))}
             {!loading && <ArrowRight size={14} />}
           </button>
         </form>
 
         {/* Switch mode */}
-        <p className="auth-switch">
+        <p className="text-center text-[0.8125rem] text-[var(--text-muted)] mt-6">
           {mode === "login" ? (
             <>
               {t("no_account")}{" "}
-              <Link href={`/${locale}/inscription`} className="auth-switch-link">
+              <Link href={`/${locale}/inscription`} className="text-[var(--gold)] font-medium hover:underline">
                 {t("register_cta")}
               </Link>
             </>
           ) : (
             <>
               {t("already_account")}{" "}
-              <Link href={`/${locale}/connexion`} className="auth-switch-link">
+              <Link href={`/${locale}/connexion`} className="text-[var(--gold)] font-medium hover:underline">
                 {t("login_cta")}
               </Link>
             </>
           )}
         </p>
       </div>
-
-      <style jsx>{`
-        .auth-container {
-          min-height: calc(100vh - var(--nav-height));
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 2rem 1rem;
-          background: var(--bg-secondary);
-        }
-        .auth-card {
-          width: 100%;
-          max-width: 440px;
-          background: var(--bg-card);
-          border: 1px solid var(--divider);
-          border-radius: 4px;
-          padding: 2.5rem;
-          box-shadow: var(--shadow-md);
-        }
-        .auth-header {
-          text-align: center;
-          margin-bottom: 2rem;
-        }
-        .auth-logo {
-          display: inline-flex;
-          flex-direction: column;
-          align-items: center;
-          font-family: var(--font-display);
-          font-size: 1.25rem;
-          font-weight: 600;
-          letter-spacing: 0.2em;
-          color: var(--text);
-          margin-bottom: 1.5rem;
-        }
-        .auth-logo small {
-          font-size: 0.45rem;
-          letter-spacing: 0.35em;
-          color: var(--gold);
-          margin-top: 2px;
-          font-style: normal;
-          font-family: var(--font-body);
-        }
-        .auth-title {
-          font-family: var(--font-display);
-          font-size: 1.75rem;
-          font-weight: 400;
-          color: var(--text);
-        }
-        .auth-error {
-          background: rgba(200, 60, 60, 0.08);
-          border: 1px solid rgba(200, 60, 60, 0.2);
-          border-radius: 4px;
-          padding: 0.75rem 1rem;
-          font-size: 0.8125rem;
-          color: #c83c3c;
-          margin-bottom: 1.25rem;
-        }
-        .auth-form {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-        .auth-pwd-toggle {
-          position: absolute;
-          right: 0.75rem;
-          top: 50%;
-          transform: translateY(-50%);
-          background: transparent;
-          border: none;
-          color: var(--text-muted);
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0.25rem;
-        }
-        .auth-switch {
-          text-align: center;
-          font-size: 0.8125rem;
-          color: var(--text-muted);
-          margin-top: 1.5rem;
-        }
-        .auth-switch-link {
-          color: var(--gold);
-          font-weight: 500;
-        }
-        .auth-switch-link:hover { text-decoration: underline; }
-      `}</style>
     </div>
   );
 }
