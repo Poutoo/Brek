@@ -567,6 +567,52 @@ async function main() {
     console.log(`  ✓ ${article.title}`);
   }
 
+  // ─── PROJECTS ─────────────────────────────────────────────────────────────
+  console.log("\n🏗️ Creating projects...");
+
+  const projectData = [
+    {
+      title: "Hôtel Particulier, Avenue Montaigne",
+      type: "Résidence Privée",
+      image: "/assets/menu/menu_passementerie.jpg",
+      description: "Une rénovation complète alliant classicisme et modernité au cœur du triangle d'or.",
+      order: 1,
+    },
+    {
+      title: "L'Éclat du Palace",
+      type: "Hôtellerie de Luxe",
+      image: "/assets/menu/menu_tissu.jpg",
+      description: "Aménagement des suites royales avec des passementeries exclusives tissées d'or.",
+      order: 2,
+    },
+    {
+      title: "Yacht Sea Gem",
+      type: "Marine",
+      image: "/assets/menu/menu_surmesure.jpg",
+      description: "Un défi technique pour des textiles résistants au milieu marin sans compromis sur le luxe.",
+      order: 3,
+    },
+    {
+      title: "Showroom Place des Vosges",
+      type: "Commercial",
+      image: "/assets/menu/menu_principal.jpg",
+      description: "Mise en scène de notre héritage dans un cadre historique prestigieux.",
+      order: 4,
+    },
+  ];
+
+  for (const proj of projectData) {
+    await prisma.project.upsert({
+      where: { id: `proj-${proj.order}` },
+      update: proj,
+      create: {
+        id: `proj-${proj.order}`,
+        ...proj,
+      },
+    });
+    console.log(`  ✓ ${proj.title}`);
+  }
+
   console.log("\n✅ Seeding complete!");
   console.log("\n📋 Comptes de test :");
   console.log("  Admin  : admin@brek.fr / admin1234");

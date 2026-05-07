@@ -37,8 +37,8 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
   ];
 
   const footerLinksLeft = [
-    { title: "À PROPOS", href: `/${locale}/a-propos` },
-    { title: "PROJETS", href: `/${locale}/projets` },
+    { title: "À PROPOS", href: `/${locale}/apropos` },
+    { title: "PROJETS", href: `/${locale}/projet` },
     //{ title: "SHOWROOMS", href: `/${locale}/contact` },
     //{ title: "BREK DANS LE MONDE", href: `/${locale}/contact` },
   ];
@@ -227,9 +227,11 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
         }
         .megamenu__link-text {
           white-space: nowrap;
+          color : #fff;
         }
         .megamenu__plus {
           opacity: 0.6;
+          color: #fff;
         }
         @media (min-width: 768px) {
           .megamenu__link { font-size: 2.5rem; }
@@ -251,6 +253,7 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
           display: flex;
           flex-direction: column;
           gap: 0.75rem;
+          color: #fff;
         }
         .megamenu__footer-link {
           font-size: 0.7rem;

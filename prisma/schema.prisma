@@ -356,3 +356,17 @@ model ContactMessage {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+// ─── PROJECT / REALIZATION ───────────────────────────────────────────────────
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   // e.g. "Résidence Privée", "Hôtellerie"
+  image       String
+  description String?  @db.Text
+  active      Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+} 
