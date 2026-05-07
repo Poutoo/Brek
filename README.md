@@ -1,53 +1,62 @@
 # Brek — Plateforme E-commerce Luxe
 
-> Passementerie & Tissus haut de gamme — Démo académique
+> Excellence en passementerie et tissus haut de gamme. Une expérience numérique sur-mesure pour les architectes d'intérieur et designers de renom.
+
+## 👥 Groupe 4
+- **Thibault DEHU** : Lead & BackEnd
+- **Elea YA** : FrontEnd
+
+---
+
+## 🏛️ Architecture & Choix Techniques 
+- **Schéma complet** : [Consulter docs/architecture.md](docs/architecture.md)
+- **ADR-001** : [Arbitrage Vendor Lock-in & Stratégie de sortie](docs/adr/0001-choix-cloud.md) 
+- **ADR-002** : [Réponse à la contrainte de Disponibilité Critique](docs/adr/0002-ha-strategy.md) 
+
+## 🎯 Contraintes du Brief 
+- **Contrainte 1 (MVP)** : Livraison d'un tunnel d'achat complet (Catalogue -> Panier -> Commande/Devis).
+- **Contrainte 2 (Budget)** : Infrastructure optimisée pour un coût < 200€/an (Hébergement Vercel Free + DB Dockerized ou Neon).
+- **Contrainte 3 (Design)** : Esthétique "Luxe" avec animations fluides, typographies premium (Cormorant Garamond) et mode sombre profond.
+
+## 📊 État du projet & MVP 
+- ✅ **Story Critique** : Consultation catalogue, filtres dynamiques et ajout au panier (100% Fonctionnel). 
+- ✅ **Gestion Devis** : Système de demande de devis pour les professionnels intégré au checkout.
+- ⚠️ **Paiement** : Simulation Stripe Elements intégrée (Mode test uniquement).
+- ❌ **Monitoring** : Alerting Telegram et Logging centralisé en cours de configuration.
+
+---
 
 ## 🚀 Démarrage rapide (Local)
 
-Suivez ces étapes dans l'ordre pour installer et lancer le projet sur votre machine.
-
 ### 1. Prérequis
-- [Node.js](https://nodejs.org/) 18+
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (pour la base de données PostgreSQL)
-- npm (installé avec Node.js)
+- [Node.js](https://nodejs.org/) 20+ (Recommandé pour Next.js 16)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- npm v10+
 
-### 2. Installation et Configuration
-
+### 2. Installation
 ```bash
-# A. Cloner le dépôt
+# Cloner le projet
 git clone <url-du-repo>
 cd Brek
 
-# B. Installer les dépendances
+# Installer les dépendances
 npm install
 
-# C. Configurer l'environnement
+# Configurer l'environnement
 cp .env.example .env
 ```
 
-### 3. Configuration du fichier `.env`
-Ouvrez le fichier `.env` et vérifiez les variables suivantes :
-1. **DATABASE_URL** : Par défaut, elle est configurée pour fonctionner avec le `docker-compose.yml` du projet.
-2. **NEXTAUTH_SECRET** : Indispensable pour l'authentification. Vous pouvez en générer un via la commande :
-   ```bash
-   npx auth secret
-   # ou
-   openssl rand -base64 32
-   ```
-
-### 4. Lancement de la Base de Données et Initialisation
-
+### 3. Initialisation de la Base de Données
+Le projet utilise **Prisma 7** avec un adaptateur driver pour PostgreSQL.
 ```bash
-# A. Démarrer les conteneurs Docker (PostgreSQL + pgAdmin)
+# Démarrer les conteneurs (PostgreSQL 16 + pgAdmin)
 npm run db:start
 
-# B. Appliquer les migrations Prisma et seeder la base (en une commande)
+# Initialiser le schéma et les données (Designers, Collections, Produits)
 npm run setup
 ```
-*Note : La commande `npm run setup` exécute les migrations et remplit la base de données avec les données de test (designers, produits, collections).*
 
-### 5. Lancer le serveur de développement
-
+### 4. Lancement
 ```bash
 npm run dev
 ```
@@ -55,128 +64,83 @@ Accès : **http://localhost:3000**
 
 ---
 
-## 🛠️ En cas de problème (Dépannage)
-
-### Problème de connexion à la base de données
-Si vous voyez une erreur `P1001: Can't reach database server` :
-1. Vérifiez que Docker Desktop est bien lancé.
-2. Relancez les conteneurs : `npm run db:stop && npm run db:start`.
-3. Vérifiez que le port `5432` n'est pas déjà utilisé par une autre instance PostgreSQL locale.
-
-### Erreur lors des migrations Prisma
-Si les migrations échouent ou si le schéma est incohérent :
-```bash
-# Réinitialiser complètement la base de données (Attention : supprime les données !)
-npx prisma migrate reset
-```
-
-### Problème de type Prisma Client
-Si vous avez des erreurs TypeScript sur `prisma` :
-```bash
-npm run db:generate
-```
-
-### Problème de cache Next.js
-Si des changements ne sont pas visibles ou si le build échoue bizarrement :
-```bash
-# Supprimer le dossier .next
-rm -rf .next
-npm run dev
-```
-
----
-
 ## 🐳 Docker & Outils
 
-| Commande | Description |
-|---|---|
-| `npm run db:start` | Démarrer PostgreSQL + pgAdmin |
-| `npm run db:stop` | Arrêter les conteneurs |
-| `npm run db:studio` | Interface graphique Prisma pour voir les données |
-
-**pgAdmin** : http://localhost:5050  
-Login : `admin@brek.fr` / `admin`
+| Service | Accès | Identifiants |
+| :--- | :--- | :--- |
+| **App Next.js** | `localhost:3000` | - |
+| **pgAdmin** | `localhost:5050` | `admin@brek.fr` / `admin` |
+| **Prisma Studio** | `npx prisma studio` | Interface graphique BDD |
 
 ---
 
 ## 📋 Comptes de test
 
 | Rôle | Email | Mot de passe |
-|---|---|---|
-| Admin | `admin@brek.fr` | `admin1234` |
-| Utilisateur | `marie.dupont@example.com` | `user1234` |
-| Utilisateur | `jean.martin@example.com` | `user1234` |
+| :--- | :--- | :--- |
+| **Administrateur** | `admin@brek.fr` | `admin1234` |
+| **Client (Marie)** | `marie.dupont@example.com` | `user1234` |
+| **Client (Jean)** | `jean.martin@example.com` | `user1234` |
 
 ---
 
 ## 🗂️ Structure du projet
 
-```
+```text
 src/
-├── app/
-│   ├── [locale]/          # Pages i18n (fr, en, es)
-│   │   ├── page.tsx       # Accueil
-│   │   ├── collections/   # Collections
-│   │   ├── produits/      # Catalogue produits
-│   │   ├── designers/     # Page designers
-│   │   ├── panier/        # Panier
-│   │   ├── checkout/      # Paiement simulé
-│   │   ├── commandes/     # Suivi commandes
-│   │   ├── favoris/       # Wishlist
-│   │   ├── compte/        # Profil utilisateur
-│   │   ├── connexion/     # Authentification
-│   │   ├── contact/       # Formulaire contact
-│   │   ├── faq/           # FAQ
-│   │   ├── newsletter/    # Newsletter
-│   │   ├── admin/         # Dashboard admin
-│   │   └── ...            # Pages légales
-│   └── api/               # API Routes
+├── app/[locale]/      # Routage i18n (Next.js 16 App Router)
+│   ├── dashboard/     # Espace Administration (CRUD, Commandes)
+│   ├── compte/        # Espace Client (Profil, Adresses, Commandes)
+│   ├── produits/      # Catalogue & Détails produits
+│   └── checkout/      # Tunnel de commande & Devis
 ├── components/
-│   ├── layout/            # TopBar, Footer, CartDrawer
-│   ├── molecules/         # ProductCard
-│   ├── sections/          # Sections homepage
-│   ├── providers/         # SessionProvider, ThemeProvider
-│   └── ui/                # ToastContainer
-├── lib/
-│   ├── prisma.ts          # Client Prisma singleton
-│   ├── auth.ts            # Config NextAuth
-│   └── utils.ts           # Utilitaires
-├── store/
-│   ├── cartStore.ts       # Zustand panier
-│   └── themeStore.ts      # Zustand thème
-└── messages/              # Traductions fr/en/es
+│   ├── layout/        # Navigation (TopBar, Sidebar, Footer)
+│   ├── ui/            # Composants atomiques (Button, Modal, Toast)
+│   └── sections/      # Blocs de construction Homepage (Hero, Featured)
+├── lib/               # Config Prisma 7, NextAuth & Utils
+├── store/             # État global (Zustand: Panier, Thème)
+└── messages/          # Dictionnaires de traduction (FR, EN, ES)
 ```
 
 ---
 
-## ⚙️ Scripts npm
+## ⚙️ Scripts utiles
 
-| Script | Description |
-|---|---|
-| `npm run dev` | Serveur de développement |
-| `npm run build` | Build production |
-| `npm run db:start` | Démarrer Docker |
-| `npm run db:migrate` | Appliquer les migrations Prisma |
-| `npm run db:seed` | Remplir la BDD avec les données de démo |
-| `npm run db:studio` | Interface graphique Prisma |
-
----
-
-## 🌐 Internationalisation
-
-La plateforme supporte 3 langues avec routage par sous-répertoire :
-- 🇫🇷 Français : `/fr/`
-- 🇬🇧 Anglais : `/en/`
-- 🇪🇸 Espagnol : `/es/`
+- `npm run dev` : Lancement en mode développement.
+- `npm run setup` : Reset complet de la base + Migration + Seed.
+- `npm run db:start` / `db:stop` : Gestion des conteneurs Docker.
+- `npm run build` : Compilation pour production.
 
 ---
 
 ## 📦 Stack technique
 
-- **Next.js 14** (App Router)
-- **Tailwind CSS** (styling)
-- **Prisma + PostgreSQL** (BDD)
-- **NextAuth v4** (auth)
-- **next-intl** (i18n)
-- **Zustand** (état global)
-- **LucideReact** (icônes)
+- **Framework** : [Next.js 16](https://nextjs.org/) (App Router)
+- **Styling** : [Tailwind CSS v4](https://tailwindcss.com/) + Custom Properties Luxe
+- **Base de données** : [PostgreSQL 16](https://www.postgresql.org/) via Docker
+- **ORM** : [Prisma v7](https://www.prisma.io/) (WASM engine ready)
+- **Authentification** : [NextAuth.js v4](https://next-auth.js.org/)
+- **Gestion d'état** : [Zustand](https://github.com/pmndrs/zustand) (Persistance locale)
+- **Internationalisation** : [next-intl](https://next-intl-docs.vercel.app/)
+
+---
+
+## 📅 Planification (Sprint MVP)
+
+| Lot | Responsable | Statut |
+| :--- | :--- | :--- |
+| **Infra & Database Schema** | Thibault | ✅ Terminé |
+| **Design System & Components** | Elea | 🚧 Partiel |
+| **Catalogue & Filtres API** | Thibault | ✅ Terminé |
+| **Tunnel Checkout & Stripe** | Thibault| ✅ Terminé |
+| **Dashboard Admin CRUD** | Thibault | ✅ Terminé |
+| **Optimisation SEO & i18n** | Elea | ✅ Terminé |
+
+---
+
+## 🗺️ Roadmap
+
+- [x] Implémentation du système de Newsletter.
+- [ ] Support multilingue complet (FR/EN/ES).
+- [ ] Finalisation du Dashboard Admin (Gestion des stocks et messages).
+- [ ] Déploiement sur infrastructure HA (High Availability).
