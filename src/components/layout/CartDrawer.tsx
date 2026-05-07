@@ -26,27 +26,29 @@ export function CartDrawer() {
   return (
     <>
       <div
-        className="cart-overlay"
+        className="fixed inset-0 bg-[#1a1614]/60 backdrop-blur-sm z-[1000] animate-fade-in"
         onClick={closeCart}
         aria-hidden="true"
       />
       <aside
-        className="cart-drawer"
+        className="fixed top-0 right-0 bottom-0 w-full max-w-[420px] bg-[var(--bg-card)] z-[1001] shadow-2xl flex flex-col animate-slide-in-right"
         aria-label="Panier"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="cart-header">
-          <div className="cart-header-title">
+        <div className="flex items-center justify-between p-5 border-b border-[var(--divider)]">
+          <div className="flex items-center gap-2.5 text-[var(--text)]">
             <ShoppingBag size={18} />
-            <h2 className="cart-title">Panier</h2>
+            <h2 className="font-serif text-xl font-normal">Panier</h2>
             {items.length > 0 && (
-              <span className="cart-count">{items.length}</span>
+              <span className="bg-[var(--gold)] text-[var(--charcoal)] text-[0.6875rem] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                {items.length}
+              </span>
             )}
           </div>
           <button
-            className="cart-close"
+            className="flex items-center justify-center w-9 h-9 bg-transparent border border-[var(--divider)] rounded-sm text-[var(--text-muted)] cursor-pointer transition-all hover:text-[var(--text)] hover:border-[var(--gold)]"
             onClick={closeCart}
             aria-label="Fermer le panier"
           >
@@ -56,43 +58,43 @@ export function CartDrawer() {
 
         {/* Contenu */}
         {items.length === 0 ? (
-          <div className="cart-empty">
-            <ShoppingBag size={48} strokeWidth={1} className="cart-empty-icon" />
-            <p className="cart-empty-text">Votre panier est vide</p>
+          <div className="flex-1 flex flex-col items-center justify-center gap-5 p-8 text-center">
+            <ShoppingBag size={48} strokeWidth={1} className="text-[var(--text-muted)] opacity-40" />
+            <p className="text-[0.9375rem] text-[var(--text-muted)]">Votre panier est vide</p>
             <Link href="/fr/produits" className="btn btn-primary btn-sm" onClick={closeCart}>
               Découvrir nos produits
             </Link>
           </div>
         ) : (
           <>
-            <div className="cart-items">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-4">
               {items.map(({ product, quantity }) => (
-                <div key={product.id} className="cart-item">
-                  <div className="cart-item-img-wrapper">
+                <div key={product.id} className="flex items-start gap-3.5 pb-4 border-b border-[var(--divider)] last:border-b-0">
+                  <div className="relative w-[72px] h-[90px] shrink-0 rounded-sm overflow-hidden bg-[var(--bg-secondary)]">
                     <Image
                       src={product.images[0] || "/assets/placeholder.png"}
                       alt={product.name}
                       fill
-                      className="cart-item-img"
+                      className="object-cover"
                       sizes="72px"
                     />
                   </div>
-                  <div className="cart-item-info">
-                    <p className="cart-item-name">{product.name}</p>
-                    <p className="cart-item-ref">Réf. {product.ref}</p>
-                    <div className="cart-item-controls">
-                      <div className="cart-qty">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-[var(--text)] truncate mb-0.5">{product.name}</p>
+                    <p className="text-[0.6875rem] text-[var(--text-muted)] tracking-wider">Réf. {product.ref}</p>
+                    <div className="flex items-center justify-between mt-2.5">
+                      <div className="flex items-center gap-2 border border-[var(--divider)] rounded-sm overflow-hidden">
                         <button
-                          className="cart-qty-btn"
+                          className="flex items-center justify-center w-7 h-7 bg-[var(--bg-secondary)] border-none cursor-pointer text-[var(--text-muted)] transition-colors hover:text-[var(--text)] hover:bg-[var(--divider)] disabled:opacity-40 disabled:cursor-not-allowed"
                           onClick={() => updateQuantity(product.id, +(quantity - 0.5).toFixed(1))}
                           aria-label="Réduire la quantité"
                           disabled={quantity <= 0.5}
                         >
                           <Minus size={12} />
                         </button>
-                        <span className="cart-qty-value">{quantity}m</span>
+                        <span className="text-[0.8125rem] min-w-[36px] text-center text-[var(--text)] font-medium">{quantity}m</span>
                         <button
-                          className="cart-qty-btn"
+                          className="flex items-center justify-center w-7 h-7 bg-[var(--bg-secondary)] border-none cursor-pointer text-[var(--text-muted)] transition-colors hover:text-[var(--text)] hover:bg-[var(--divider)] disabled:opacity-40 disabled:cursor-not-allowed"
                           onClick={() => updateQuantity(product.id, +(quantity + 0.5).toFixed(1))}
                           aria-label="Augmenter la quantité"
                           disabled={quantity >= product.stock}
@@ -100,11 +102,11 @@ export function CartDrawer() {
                           <Plus size={12} />
                         </button>
                       </div>
-                      <span className="cart-item-price">{formatPrice(product.price * quantity)}</span>
+                      <span className="text-sm font-medium text-[var(--text)]">{formatPrice(product.price * quantity)}</span>
                     </div>
                   </div>
                   <button
-                    className="cart-item-remove"
+                    className="flex items-center justify-center w-7 h-7 bg-transparent border-none text-[var(--text-muted)] cursor-pointer rounded-sm transition-all hover:text-[#c83c3c] hover:bg-[#c83c3c]/10 shrink-0"
                     onClick={() => removeItem(product.id)}
                     aria-label={`Supprimer ${product.name} du panier`}
                   >
@@ -115,29 +117,28 @@ export function CartDrawer() {
             </div>
 
             {/* Footer */}
-            <div className="cart-footer">
-              <div className="cart-subtotal">
+            <div className="p-5 md:p-6 border-t border-[var(--divider)] flex flex-col gap-2.5">
+              <div className="flex items-center justify-between text-sm text-[var(--text-muted)]">
                 <span>Sous-total</span>
                 <span>{formatPrice(total)}</span>
               </div>
-              <div className="cart-shipping">
+              <div className="flex items-center justify-between text-sm text-[var(--text-muted)]">
                 <span>Livraison</span>
-                <span className="cart-shipping-free">Offerte</span>
+                <span className="text-[#16a34a] font-medium">Offerte</span>
               </div>
-              <div className="cart-total">
+              <div className="flex items-center justify-between font-semibold text-base text-[var(--text)] pt-2 border-t border-[var(--divider)] mb-2">
                 <span>Total</span>
                 <span>{formatPrice(total)}</span>
               </div>
               <Link
                 href="/fr/checkout"
-                className="btn btn-primary"
-                style={{ width: "100%", justifyContent: "center" }}
+                className="btn btn-primary w-full justify-center"
                 onClick={closeCart}
               >
                 Passer la commande
               </Link>
               <button
-                className="cart-continue"
+                className="bg-transparent border-none text-[0.8125rem] text-[var(--text-muted)] cursor-pointer text-center p-2 transition-colors hover:text-[var(--text)]"
                 onClick={closeCart}
               >
                 Continuer les achats
@@ -146,199 +147,6 @@ export function CartDrawer() {
           </>
         )}
       </aside>
-
-      <style jsx>{`
-        .cart-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 1.25rem 1.5rem;
-          border-bottom: 1px solid var(--divider);
-        }
-        .cart-header-title {
-          display: flex;
-          align-items: center;
-          gap: 0.625rem;
-          color: var(--text);
-        }
-        .cart-title {
-          font-family: var(--font-display);
-          font-size: 1.25rem;
-          font-weight: 400;
-        }
-        .cart-count {
-          background: var(--gold);
-          color: var(--charcoal);
-          font-size: 0.6875rem;
-          font-weight: 700;
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .cart-close {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 36px;
-          height: 36px;
-          background: transparent;
-          border: 1px solid var(--divider);
-          border-radius: 2px;
-          color: var(--text-muted);
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        .cart-close:hover {
-          color: var(--text);
-          border-color: var(--gold);
-        }
-        .cart-empty {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 1.25rem;
-          padding: 2rem;
-          text-align: center;
-        }
-        .cart-empty-icon { color: var(--text-muted); opacity: 0.4; }
-        .cart-empty-text { font-size: 0.9375rem; color: var(--text-muted); }
-        .cart-items {
-          flex: 1;
-          overflow-y: auto;
-          padding: 1rem 1.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-        .cart-item {
-          display: flex;
-          align-items: flex-start;
-          gap: 0.875rem;
-          padding-bottom: 1rem;
-          border-bottom: 1px solid var(--divider);
-        }
-        .cart-item:last-child { border-bottom: none; }
-        .cart-item-img-wrapper {
-          position: relative;
-          width: 72px;
-          height: 90px;
-          flex-shrink: 0;
-          border-radius: 2px;
-          overflow: hidden;
-          background: var(--bg-secondary);
-        }
-        :global(.cart-item-img) {
-          object-fit: cover;
-        }
-        .cart-item-info { flex: 1; min-width: 0; }
-        .cart-item-name {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: var(--text);
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          margin-bottom: 2px;
-        }
-        .cart-item-ref {
-          font-size: 0.6875rem;
-          color: var(--text-muted);
-          letter-spacing: 0.04em;
-        }
-        .cart-item-controls {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-top: 0.625rem;
-        }
-        .cart-qty {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          border: 1px solid var(--divider);
-          border-radius: 2px;
-          overflow: hidden;
-        }
-        .cart-qty-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 28px;
-          height: 28px;
-          background: var(--bg-secondary);
-          border: none;
-          cursor: pointer;
-          color: var(--text-muted);
-          transition: all 0.15s;
-        }
-        .cart-qty-btn:hover:not(:disabled) { color: var(--text); background: var(--divider); }
-        .cart-qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .cart-qty-value {
-          font-size: 0.8125rem;
-          min-width: 36px;
-          text-align: center;
-          color: var(--text);
-        }
-        .cart-item-price {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: var(--text);
-        }
-        .cart-item-remove {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 28px;
-          height: 28px;
-          background: transparent;
-          border: none;
-          color: var(--text-muted);
-          cursor: pointer;
-          border-radius: 2px;
-          transition: all 0.15s;
-          flex-shrink: 0;
-        }
-        .cart-item-remove:hover { color: #c83c3c; background: rgba(200,60,60,0.08); }
-        .cart-footer {
-          padding: 1.25rem 1.5rem;
-          border-top: 1px solid var(--divider);
-          display: flex;
-          flex-direction: column;
-          gap: 0.625rem;
-        }
-        .cart-subtotal, .cart-shipping, .cart-total {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: 0.875rem;
-        }
-        .cart-subtotal, .cart-shipping { color: var(--text-muted); }
-        .cart-total {
-          font-weight: 600;
-          font-size: 1rem;
-          color: var(--text);
-          padding-top: 0.5rem;
-          border-top: 1px solid var(--divider);
-          margin-bottom: 0.5rem;
-        }
-        .cart-shipping-free { color: #16a34a; font-weight: 500; }
-        .cart-continue {
-          background: transparent;
-          border: none;
-          font-size: 0.8125rem;
-          color: var(--text-muted);
-          cursor: pointer;
-          text-align: center;
-          padding: 0.5rem;
-          transition: color 0.15s;
-        }
-        .cart-continue:hover { color: var(--text); }
-      `}</style>
     </>
   );
 }

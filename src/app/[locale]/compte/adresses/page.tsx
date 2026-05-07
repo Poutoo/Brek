@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Trash2, MapPin, X } from "lucide-react";
+import { Plus, Trash2, MapPin, Edit3, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ui/ToastContainer";
+import { Modal } from "@/components/ui/Modal";
+import { AddressForm } from "@/components/forms/AddressForm";
+import { Button } from "@/components/ui/Button";
 
 type Address = {
   id: string;
@@ -22,17 +25,10 @@ export default function AdressesPage() {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    label: "",
-    firstName: "",
-    lastName: "",
-    line1: "",
-    line2: "",
-    city: "",
-    postalCode: "",
-    country: "France",
-    isDefault: false
-  });
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
+  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchAddresses = async () => {
     try {
@@ -52,139 +48,185 @@ export default function AdressesPage() {
     fetchAddresses();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Voulez-vous vraiment supprimer cette adresse ?")) return;
+  const handleDelete = async () => {
+    if (!addressToDelete) return;
     
+    setIsSubmitting(true);
     try {
-      const res = await fetch(`/api/adresses/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/adresses/${addressToDelete}`, { method: "DELETE" });
       if (res.ok) {
         addToast({ title: "Adresse supprimée", type: "success" });
         fetchAddresses();
+        setIsConfirmModalOpen(false);
       } else {
         addToast({ title: "Erreur lors de la suppression", type: "error" });
       }
     } catch (error) {
       addToast({ title: "Erreur lors de la suppression", type: "error" });
+    } finally {
+      setIsSubmitting(false);
+      setAddressToDelete(null);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const openDeleteConfirm = (id: string) => {
+    setAddressToDelete(id);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleOpenEdit = (addr: Address) => {
+    setEditingAddress(addr);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenAdd = () => {
+    setEditingAddress(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (data: any) => {
+    setIsSubmitting(true);
     try {
-      const res = await fetch("/api/adresses", {
-        method: "POST",
+      const url = editingAddress ? `/api/adresses/${editingAddress.id}` : "/api/adresses";
+      const method = editingAddress ? "PATCH" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(data)
       });
       
       if (res.ok) {
-        addToast({ title: "Adresse ajoutée", type: "success" });
+        addToast({ title: editingAddress ? "Adresse mise à jour" : "Adresse ajoutée", type: "success" });
         setIsModalOpen(false);
-        setFormData({ label: "", firstName: "", lastName: "", line1: "", line2: "", city: "", postalCode: "", country: "France", isDefault: false });
         fetchAddresses();
       } else {
-        addToast({ title: "Erreur lors de l'ajout", type: "error" });
+        const errorData = await res.json();
+        addToast({ title: errorData.error || "Erreur lors de l'enregistrement", type: "error" });
       }
     } catch (error) {
-      addToast({ title: "Erreur lors de l'ajout", type: "error" });
+      addToast({ title: "Erreur lors de l'enregistrement", type: "error" });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (loading) return <div>Chargement...</div>;
+  if (loading) return (
+    <div style={{ display: "flex", justifyContent: "center", padding: "4rem" }}>
+      <div className="loader-luxe"></div>
+    </div>
+  );
 
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
         <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", fontWeight: 400 }}>Mes adresses</h2>
-        <button className="btn btn-primary" onClick={() => setIsModalOpen(true)} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <button className="btn btn-primary" onClick={handleOpenAdd} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <Plus size={16} /> Ajouter une adresse
         </button>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.5rem" }}>
         {addresses.length === 0 ? (
-          <p style={{ color: "var(--text-muted)" }}>Vous n'avez pas encore enregistré d'adresse.</p>
+          <div style={{ gridColumn: "1 / -1", padding: "4rem 2rem", textAlign: "center", background: "var(--bg-secondary)", borderRadius: "4px" }}>
+            <MapPin size={48} style={{ color: "var(--divider)", marginBottom: "1rem" }} />
+            <p style={{ color: "var(--text-muted)" }}>Vous n'avez pas encore enregistré d'adresse.</p>
+          </div>
         ) : (
           addresses.map((addr) => (
-            <div key={addr.id} style={{ border: "1px solid var(--divider)", borderRadius: "4px", padding: "1.5rem", position: "relative" }}>
+            <div key={addr.id} style={{ border: "1px solid var(--divider)", borderRadius: "4px", padding: "2rem", position: "relative", backgroundColor: "var(--bg-card)", transition: "all 0.3s var(--ease-luxury)" }} className="address-card">
               {addr.isDefault && (
-                <span className="badge badge-gold" style={{ position: "absolute", top: "1rem", right: "1rem" }}>Défaut</span>
+                <span style={{ position: "absolute", top: "1.5rem", right: "1.5rem", fontSize: "0.625rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--gold)", fontWeight: 700, border: "1px solid var(--gold)", padding: "0.25rem 0.5rem", borderRadius: "2px" }}>
+                  Par défaut
+                </span>
               )}
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", color: "var(--gold)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem", color: "var(--gold)" }}>
                 <MapPin size={20} />
-                <h3 style={{ fontWeight: 500 }}>{addr.label}</h3>
+                <h3 style={{ fontWeight: 500, fontFamily: "var(--font-display)", fontSize: "1.25rem" }}>{addr.label}</h3>
               </div>
-              <div style={{ fontSize: "0.875rem", color: "var(--text)", lineHeight: "1.6" }}>
-                <p style={{ fontWeight: 500 }}>{addr.firstName} {addr.lastName}</p>
-                <p>{addr.line1}</p>
-                {addr.line2 && <p>{addr.line2}</p>}
-                <p>{addr.postalCode} {addr.city}</p>
-                <p>{addr.country}</p>
+              <div style={{ fontSize: "0.9375rem", color: "var(--text)", lineHeight: "1.8" }}>
+                <p style={{ fontWeight: 600, color: "var(--text)", marginBottom: "0.25rem" }}>{addr.firstName} {addr.lastName}</p>
+                <p style={{ color: "var(--text-muted)" }}>{addr.line1}</p>
+                {addr.line2 && <p style={{ color: "var(--text-muted)" }}>{addr.line2}</p>}
+                <p style={{ color: "var(--text-muted)" }}>{addr.postalCode} {addr.city}</p>
+                <p style={{ color: "var(--text-muted)", textTransform: "uppercase" }}>{addr.country}</p>
               </div>
-              <button 
-                onClick={() => handleDelete(addr.id)}
-                style={{ marginTop: "1.5rem", display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--error)", fontSize: "0.875rem", background: "none", border: "none", cursor: "pointer", padding: 0 }}
-              >
-                <Trash2 size={16} /> Supprimer
-              </button>
+              
+              <div style={{ display: "flex", gap: "1.5rem", marginTop: "2rem" }}>
+                <button 
+                  onClick={() => handleOpenEdit(addr)}
+                  style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-muted)", fontSize: "0.75rem", background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.2s" }}
+                  onMouseOver={(e) => e.currentTarget.style.color = "var(--gold)"}
+                  onMouseOut={(e) => e.currentTarget.style.color = "var(--text-muted)"}
+                >
+                  <Edit3 size={14} /> Modifier
+                </button>
+                <button 
+                  onClick={() => openDeleteConfirm(addr.id)}
+                  style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-muted)", fontSize: "0.75rem", background: "none", border: "none", cursor: "pointer", padding: 0, transition: "color 0.2s" }}
+                  onMouseOver={(e) => e.currentTarget.style.color = "var(--error)"}
+                  onMouseOut={(e) => e.currentTarget.style.color = "var(--text-muted)"}
+                >
+                  <Trash2 size={14} /> Supprimer
+                </button>
+              </div>
             </div>
           ))
         )}
       </div>
 
-      {isModalOpen && (
-        <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ backgroundColor: "var(--bg)", padding: "2rem", borderRadius: "4px", width: "100%", maxWidth: "500px", position: "relative", maxHeight: "90vh", overflowY: "auto" }}>
-            <button onClick={() => setIsModalOpen(false)} style={{ position: "absolute", top: "1rem", right: "1rem", background: "none", border: "none", cursor: "pointer", color: "var(--text)" }}>
-              <X size={24} />
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        title={editingAddress ? "Modifier l'adresse" : "Ajouter une adresse"}
+      >
+        <AddressForm 
+          initialData={editingAddress || undefined}
+          onSubmit={handleSubmit} 
+          onCancel={() => setIsModalOpen(false)} 
+          submitting={isSubmitting} 
+        />
+      </Modal>
+
+      {/* Modal de confirmation de suppression */}
+      <Modal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        title="Confirmation de suppression"
+        maxWidth="400px"
+      >
+        <div style={{ textAlign: "center" }}>
+          <div style={{ backgroundColor: "rgba(196, 43, 28, 0.1)", width: "60px", height: "60px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.5rem" }}>
+            <AlertTriangle size={30} color="#c42b1c" />
+          </div>
+          <p style={{ color: "var(--text)", marginBottom: "0.5rem", fontWeight: 500 }}>Voulez-vous vraiment supprimer cette adresse ?</p>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", marginBottom: "2rem" }}>Cette action est irréversible.</p>
+          
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <button 
+              onClick={() => setIsConfirmModalOpen(false)} 
+              style={{ flex: 1, padding: "0.75rem", background: "var(--bg-secondary)", border: "1px solid var(--divider)", borderRadius: "4px", color: "var(--text)", cursor: "pointer", fontSize: "0.875rem", fontWeight: 500 }}
+            >
+              Annuler
             </button>
-            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.5rem", marginBottom: "1.5rem" }}>Ajouter une adresse</h3>
-            
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div className="form-group">
-                <label>Nom de l'adresse (ex: Domicile, Bureau)</label>
-                <input type="text" className="form-control" required value={formData.label} onChange={e => setFormData({...formData, label: e.target.value})} />
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div className="form-group">
-                  <label>Prénom</label>
-                  <input type="text" className="form-control" required value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} />
-                </div>
-                <div className="form-group">
-                  <label>Nom</label>
-                  <input type="text" className="form-control" required value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} />
-                </div>
-              </div>
-              <div className="form-group">
-                <label>Adresse (Ligne 1)</label>
-                <input type="text" className="form-control" required value={formData.line1} onChange={e => setFormData({...formData, line1: e.target.value})} />
-              </div>
-              <div className="form-group">
-                <label>Complément d'adresse (Ligne 2)</label>
-                <input type="text" className="form-control" value={formData.line2} onChange={e => setFormData({...formData, line2: e.target.value})} />
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
-                <div className="form-group">
-                  <label>Code Postal</label>
-                  <input type="text" className="form-control" required value={formData.postalCode} onChange={e => setFormData({...formData, postalCode: e.target.value})} />
-                </div>
-                <div className="form-group">
-                  <label>Ville</label>
-                  <input type="text" className="form-control" required value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} />
-                </div>
-              </div>
-              <div className="form-group" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <input type="checkbox" id="isDefault" checked={formData.isDefault} onChange={e => setFormData({...formData, isDefault: e.target.checked})} />
-                <label htmlFor="isDefault" style={{ marginBottom: 0 }}>Définir comme adresse par défaut</label>
-              </div>
-              
-              <button type="submit" className="btn btn-primary" style={{ marginTop: "1rem" }}>
-                Enregistrer l'adresse
-              </button>
-            </form>
+            <button 
+              onClick={handleDelete} 
+              disabled={isSubmitting}
+              style={{ flex: 1, padding: "0.75rem", background: "#c42b1c", border: "none", borderRadius: "4px", color: "white", cursor: "pointer", fontSize: "0.875rem", fontWeight: 500 }}
+            >
+              {isSubmitting ? "Suppression..." : "Oui, supprimer"}
+            </button>
           </div>
         </div>
-      )}
+      </Modal>
+
+      <style jsx>{`
+        .address-card:hover {
+          border-color: var(--gold-soft) !important;
+          transform: translateY(-4px);
+          box-shadow: var(--shadow-md);
+        }
+      `}</style>
     </div>
   );
 }
