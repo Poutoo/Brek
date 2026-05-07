@@ -740,5 +740,24 @@ details[open] .faq-icon { transform: rotate(45deg); }
   background-color: var(--bg-secondary);
 }
 
+/* ─── NEWSLETTER ARTICLE ─────────────────────────────────────────────────── */
+.newsletter-article-body p::first-letter {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  float: left;
+  line-height: 0.9;
+  padding-right: 0.75rem;
+  padding-top: 0.25rem;
+  color: var(--gold);
+  font-weight: 400;
+}
 
+.newsletter-article-body p:first-of-type {
+  margin-top: 1rem;
+}
 
+.newsletter-article-body p {
+  margin-bottom: 2rem;
+  text-align: justify;
+  hyphens: auto;
+}
