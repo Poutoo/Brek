@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Trash2, CreditCard, X } from "lucide-react";
 import { useToast } from "@/components/ui/ToastContainer";
+import { Button } from "@/components/ui/Button";
 
 type PaymentMethod = {
   id: string;
@@ -135,45 +136,50 @@ export default function PaiementPage() {
 
       {isModalOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ backgroundColor: "var(--bg)", padding: "2rem", borderRadius: "4px", width: "100%", maxWidth: "400px", position: "relative" }}>
+          <div style={{ backgroundColor: "var(--bg)", padding: "2.5rem", borderRadius: "4px", width: "100%", maxWidth: "500px", position: "relative" }}>
             <button onClick={() => setIsModalOpen(false)} style={{ position: "absolute", top: "1rem", right: "1rem", background: "none", border: "none", cursor: "pointer", color: "var(--text)" }}>
               <X size={24} />
             </button>
-            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.5rem", marginBottom: "1.5rem" }}>Ajouter une carte</h3>
-            <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", marginBottom: "1.5rem" }}>
+            <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", marginBottom: "1rem" }}>Ajouter une carte</h3>
+            <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", marginBottom: "2rem" }}>
               Ceci est un environnement de démonstration. N'entrez pas de vraies informations bancaires.
             </p>
             
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div className="form-group">
-                <label>Numéro de carte</label>
-                <input type="text" className="form-control" required placeholder="1234 5678 9101 1121" maxLength={19} value={formData.cardNumber} onChange={e => setFormData({...formData, cardNumber: e.target.value})} />
+            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              <div className="input-group">
+                <input type="text" id="cardNumber" className="input-field" required placeholder=" " maxLength={19} value={formData.cardNumber} onChange={e => setFormData({...formData, cardNumber: e.target.value})} />
+                <label htmlFor="cardNumber" className="input-label">Numéro de carte</label>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
-                <div className="form-group">
-                  <label>Mois (MM)</label>
-                  <input type="text" className="form-control" required placeholder="12" maxLength={2} value={formData.expMonth} onChange={e => setFormData({...formData, expMonth: e.target.value})} />
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
+                <div className="input-group">
+                  <input type="text" id="expMonth" className="input-field" required placeholder=" " maxLength={2} value={formData.expMonth} onChange={e => setFormData({...formData, expMonth: e.target.value})} />
+                  <label htmlFor="expMonth" className="input-label">Mois (MM)</label>
                 </div>
-                <div className="form-group">
-                  <label>Année (AA)</label>
-                  <input type="text" className="form-control" required placeholder="25" maxLength={2} value={formData.expYear} onChange={e => setFormData({...formData, expYear: e.target.value})} />
+                <div className="input-group">
+                  <input type="text" id="expYear" className="input-field" required placeholder=" " maxLength={2} value={formData.expYear} onChange={e => setFormData({...formData, expYear: e.target.value})} />
+                  <label htmlFor="expYear" className="input-label">Année (AA)</label>
                 </div>
-                <div className="form-group">
-                  <label>CVC</label>
-                  <input type="text" className="form-control" required placeholder="123" maxLength={3} value={formData.cvc} onChange={e => setFormData({...formData, cvc: e.target.value})} />
+                <div className="input-group">
+                  <input type="text" id="cvc" className="input-field" required placeholder=" " maxLength={3} value={formData.cvc} onChange={e => setFormData({...formData, cvc: e.target.value})} />
+                  <label htmlFor="cvc" className="input-label">CVC</label>
                 </div>
-              </div>
-              
-              <div className="form-group" style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.5rem" }}>
-                <input type="checkbox" id="isDefaultCard" checked={formData.isDefault} onChange={e => setFormData({...formData, isDefault: e.target.checked})} />
-                <label htmlFor="isDefaultCard" style={{ marginBottom: 0 }}>Définir comme carte par défaut</label>
               </div>
               
-              <button type="submit" className="btn btn-primary" style={{ marginTop: "1rem" }}>
-                Ajouter la carte
-              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.5rem" }}>
+                <input type="checkbox" id="isDefaultCard" checked={formData.isDefault} onChange={e => setFormData({...formData, isDefault: e.target.checked})} style={{ accentColor: "var(--gold)", width: "16px", height: "16px" }} />
+                <label htmlFor="isDefaultCard" style={{ marginBottom: 0, fontSize: "0.875rem", cursor: "pointer" }}>Définir comme carte par défaut</label>
+              </div>
+              
+              <div style={{ marginTop: "1rem", display: "flex", justifyContent: "center" }}>
+                <Button type="submit" withLine className="w-full-btn">
+                  AJOUTER LA CARTE
+                </Button>
+              </div>
             </form>
           </div>
+          <style jsx>{`
+            :global(.w-full-btn) { width: 100%; }
+          `}</style>
         </div>
       )}
     </div>

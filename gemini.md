@@ -1,8 +1,8 @@
 # gemini.md — Suivi du projet Brek
 
-## Dernière mise à jour : 2026-05-07 (Refonte de l'Espace Pro /compte)
+## Dernière mise à jour : 2026-05-07 (CRUD Admin & Layout Dashboard)
 
-## État du projet : Phase 1-5 ✅ Complétées | Phase 6 en cours...
+## État du projet : Phase 1-6 ✅ Complétées | Phase 7 en cours...
 
 ---
 
@@ -69,13 +69,15 @@
 | `/[locale]/compte/paiement` | ✅ |
 | `/[locale]/compte/commandes` | ✅ (Commandes & devis) |
 | `/[locale]/compte/parametres`| ✅ |
-| `/[locale]/admin` | ✅ (dashboard KPIs) |
-| `/[locale]/panier` | ✅ (via CartDrawer) |
-| `/[locale]/newsletter` | ✅ |
-| `/[locale]/admin/produits` | ✅ |
-| `/[locale]/admin/commandes` | ✅ |
-| `/[locale]/admin/utilisateurs` | ✅ |
-| `/[locale]/admin/messages` | ✅ |
+| `/[locale]/dashboard` | ✅ (Dashboard principal) |
+| `/[locale]/dashboard/produits` | ✅ (Listing) |
+| `/[locale]/dashboard/produits/nouveau` | ✅ (Création) |
+| `/[locale]/dashboard/produits/[id]` | ✅ (Édition) |
+| `/[locale]/dashboard/commandes` | ✅ (Listing) |
+| `/[locale]/dashboard/commandes/[id]` | ✅ (Détails) |
+| `/[locale]/dashboard/utilisateurs` | ✅ |
+| `/[locale]/dashboard/messages` | ✅ |
+| `/[locale]/admin` | ✅ (Login Admin) |
 
 ## APIs créées
 - `GET/POST /api/produits` — liste + filtres

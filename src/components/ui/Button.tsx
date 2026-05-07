@@ -12,6 +12,8 @@ interface ButtonProps {
   className?: string;
   icon?: React.ReactNode;
   withLine?: boolean;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
 }
 
 export function Button({
@@ -23,6 +25,8 @@ export function Button({
   className = "",
   icon,
   withLine = false,
+  type = "button",
+  disabled = false,
 }: ButtonProps) {
   const isLink = !!href;
   const classes = `btn ${variant === "invert" ? "btn--invert" : ""} ${reverse ? "btn--reverse" : ""} ${withLine ? "btn--with-line" : ""} ${className}`;
@@ -46,7 +50,7 @@ export function Button({
   }
 
   return (
-    <button onClick={onClick} className={classes}>
+    <button type={type} onClick={onClick} className={classes} disabled={disabled}>
       {content}
       <style jsx>{buttonStyles}</style>
     </button>
