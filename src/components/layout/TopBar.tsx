@@ -117,11 +117,10 @@ export function TopBar({ locale }: TopBarProps) {
   return (
     <>
       <header
-        className={`fixed top-6 left-8 right-8 z-[500] h-[var(--nav-height)] rounded-lg transition-all duration-500 ease-[var(--ease-luxury)] ${
-          scrolled ? "bg-white text-[#533b3b] shadow-lg" : 
-          isTransparent ? "bg-transparent text-white shadow-none" : 
-          "bg-white text-[#533b3b] shadow-md"
-        } ${isLoading ? "-translate-y-[200%] opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}
+        className={`fixed top-6 left-8 right-8 z-[500] h-[var(--nav-height)] rounded-lg transition-all duration-500 ease-[var(--ease-luxury)] ${scrolled ? "bg-white text-[#533b3b] shadow-lg" :
+            isTransparent ? "bg-transparent text-white shadow-none" :
+              "bg-white text-[#533b3b] shadow-md"
+          } ${isLoading ? "-translate-y-[200%] opacity-0 pointer-events-none" : "translate-y-0 opacity-100"}`}
         role="banner"
       >
         <div className="mx-auto flex h-full w-full max-w-[1440px] items-center justify-between px-6 md:px-10 lg:px-32">

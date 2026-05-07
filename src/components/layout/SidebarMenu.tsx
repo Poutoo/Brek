@@ -53,10 +53,10 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
     <div className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm animate-sidebar-fade flex" role="dialog" aria-modal="true">
       {/* Background Images */}
       <div className="absolute inset-0 z-0 overflow-hidden hidden md:block">
-        <img 
-          src="/assets/menu/menu_principal.jpg" 
-          alt="" 
-          className="absolute inset-0 w-full h-full object-cover opacity-10 transition-all duration-700 ease-in-out scale-100" 
+        <img
+          src="/assets/menu/menu_principal.jpg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-10 transition-all duration-700 ease-in-out scale-100"
         />
         {sections.map((section) => (
           <img
@@ -99,185 +99,25 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
           </nav>
         </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <div className="flex flex-col gap-2">
-              <Link href={`/${locale}/a-propos`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
-                L'HISTOIRE
-              </Link>
-              <Link href={`/${locale}/contact`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
-                SHOWROOMS
-              </Link>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Link href={`/${locale}/newsletter`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
-                ACTUALITÉS
-              </Link>
-              <Link href={`/${locale}/contact`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
-                CONTACT
-              </Link>
-            </div>
+        <div className="grid grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <Link href={`/${locale}/a-propos`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
+              L'HISTOIRE
+            </Link>
+            <Link href={`/${locale}/contact`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
+              SHOWROOMS
+            </Link>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Link href={`/${locale}/newsletter`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
+              ACTUALITÉS
+            </Link>
+            <Link href={`/${locale}/contact`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
+              CONTACT
+            </Link>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .megamenu {
-          position: fixed;
-          inset: 0;
-          z-index: 1000;
-          background: #000; /* dark fallback */
-          animation: megamenuFadeIn 0.5s var(--ease-luxury);
-          display: flex;
-        }
-
-        .megamenu__backgrounds {
-          position: absolute;
-          inset: 0;
-          z-index: 0;
-          overflow: hidden;
-          display: none;
-        }
-        @media (min-width: 768px) {
-          .megamenu__backgrounds { display: block; }
-        }
-
-        .megamenu__bg-img {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          opacity: 0;
-          transition: all 0.7s ease-in-out;
-          transform: scale(1.1);
-        }
-        .megamenu__bg-img--default {
-          opacity: 0.1;
-          transform: scale(1);
-        }
-        .megamenu__bg-img--active {
-          opacity: 1;
-          transform: scale(1);
-        }
-
-        .megamenu__panel {
-          position: relative;
-          z-index: 10;
-          width: 100%;
-          max-width: 500px;
-          height: 100dvh;
-          background: #7a6a64; /* brown like reference */
-          display: flex;
-          flex-direction: column;
-          padding: 2rem;
-          transform: translateX(-100%);
-          animation: panelSlideIn 0.6s var(--ease-luxury) forwards;
-        }
-        @media (min-width: 1200px) {
-          .megamenu__panel { max-width: 700px; padding: 4rem; }
-        }
-
-        .megamenu__header {
-          margin-bottom: 2rem;
-        }
-        .megamenu__close-btn {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          background: transparent;
-          border: none;
-          color: #fff;
-          cursor: pointer;
-          transition: opacity 0.3s;
-        }
-        .megamenu__close-text {
-          font-size: 0.75rem;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          font-weight: 500;
-        }
-        .megamenu__close-btn:hover { opacity: 0.7; }
-
-        .megamenu__content {
-          flex: 1;
-          display: flex;
-          align-items: center;
-        }
-
-        .megamenu__list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .megamenu__item {
-          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .megamenu__link {
-          display: flex;
-          align-items: center;
-          padding: 1.5rem 0;
-          font-family: var(--font-display);
-          font-size: 2.2rem;
-          text-transform: uppercase;
-          color: #fff;
-          transition: all 0.3s;
-          line-height: 1;
-        }
-        .megamenu__link-text {
-          white-space: nowrap;
-          color : #fff;
-        }
-        .megamenu__plus {
-          opacity: 0.6;
-          color: #fff;
-        }
-        @media (min-width: 768px) {
-          .megamenu__link { font-size: 2.5rem; }
-        }
-        .megamenu__link:hover {
-          color: #fff;
-          opacity: 0.8;
-        }
-
-        .megamenu__footer {
-          margin-top: 4rem;
-        }
-        .megamenu__footer-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
-        }
-        .megamenu__footer-col {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          color: #fff;
-        }
-        .megamenu__footer-link {
-          font-size: 0.7rem;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.6);
-          transition: color 0.3s;
-        }
-        .megamenu__footer-link:hover {
-          color: #fff;
-        }
-
-        @keyframes megamenuFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes panelSlideIn {
-          from { transform: translateX(-100%); }
-          to { transform: translateX(0); }
-        }
-      `}</style>
-    </>
+    </div>
   );
 }
