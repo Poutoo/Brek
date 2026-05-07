@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBag, Heart, Download, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ShoppingBag, Heart, Maximize2, HelpCircle, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { formatPrice, formatStock } from "@/lib/utils";
 import { ProductCard } from "@/components/molecules/ProductCard";
+import { Button } from "@/components/ui/Button";
 
 interface ProductDetailClientProps {
   product: {
@@ -28,158 +29,239 @@ interface ProductDetailClientProps {
 export function ProductDetailClient({ product, suggestions, locale }: ProductDetailClientProps) {
   const { addItem, openCart } = useCartStore();
   const [activeImg, setActiveImg] = useState(0);
-  const [qty, setQty] = useState(1);
+  const [qty, setQty] = useState(1.00);
   const [added, setAdded] = useState(false);
+  const [showFeatures, setShowFeatures] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const inStock = product.stock > 0;
   const images = product.images.length ? product.images : ["/assets/placeholder.png"];
 
+  // Simulation de variantes de couleurs pour le design luxe
+  const colors = [
+    { id: "9710", name: "Sauge", img: images[0] },
+    { id: "9711", name: "Poudré", img: images[1] || images[0] },
+    { id: "9712", name: "Or", img: images[2] || images[0] },
+    { id: "9713", name: "Terre", img: images[0] },
+    { id: "9714", name: "Noir", img: images[0] },
+    { id: "9715", name: "Gris", img: images[0] },
+  ];
+  const [selectedColor, setSelectedColor] = useState(colors[0]);
+
   const handleAdd = () => {
-    addItem({ id: product.id, ref: product.ref, name: product.name, price: product.price, images: product.images, stock: product.stock, unit: product.unit }, qty);
+    addItem({ 
+      id: product.id, 
+      ref: product.ref, 
+      name: product.name, 
+      price: product.price, 
+      images: product.images, 
+      stock: product.stock, 
+      unit: product.unit 
+    }, qty);
     setAdded(true);
     openCart();
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const metaRows = [
-    { label: "Composition", key: "composition" },
-    { label: "Largeur", key: "width" },
-    { label: "Poids", key: "weight" },
-    { label: "Origine", key: "origin" },
-    { label: "Entretien", key: "care" },
-  ];
-
+  if (!isMounted) return null;
   return (
-    <div style={{ paddingTop: "3rem", paddingBottom: "6rem" }}>
-      <div className="container-brek">
+    <div className="pt-8 pb-24 bg-[var(--bg)]">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 xl:px-32">
         {/* Breadcrumb */}
-        <nav aria-label="Fil d'Ariane" style={{ marginBottom: "2rem", fontSize: "0.8125rem", color: "var(--text-muted)", display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <Link href={`/${locale}/produits`}>Produits</Link>
-          <span>/</span>
-          {product.collection && <><Link href={`/${locale}/collections/${product.collection.slug}`}>{product.collection.name}</Link><span>/</span></>}
-          <span style={{ color: "var(--text)" }}>{product.name}</span>
+        <nav className="flex items-center gap-3 text-[11px] tracking-widest text-[var(--text-muted)] mb-12 uppercase" aria-label="Breadcrumb">
+          <Link href={`/${locale}/produits`} className="text-inherit no-underline hover:text-[var(--gold)] transition-colors">PRODUITS</Link>
+          <span className="opacity-50">/</span>
+          {product.collection && (
+            <>
+              <Link href={`/${locale}/collections/${product.collection.slug}`} className="text-inherit no-underline hover:text-[var(--gold)] transition-colors">{product.collection.name}</Link>
+              <span className="opacity-50">/</span>
+            </>
+          )}
+          <span className="text-[var(--text)] font-medium">{product.name}</span>
         </nav>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem" }}>
-          {/* Galerie */}
-          <div>
-            <div style={{ position: "relative", aspectRatio: "4/5", borderRadius: 4, overflow: "hidden", background: "var(--bg-secondary)", marginBottom: "0.75rem" }}>
-              <Image src={images[activeImg]} alt={product.name} fill style={{ objectFit: "cover" }} priority sizes="(max-width:1024px) 100vw, 50vw" />
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-16 items-start">
+          
+          {/* LEFT: GALLERY */}
+          <div className="flex gap-6">
+            <div className="hidden md:flex flex-col gap-4 w-20 shrink-0">
+              {images.map((img, i) => (
+                <button 
+                  key={i} 
+                  className={`w-20 h-20 relative border bg-[#f7f6f2] cursor-pointer overflow-hidden transition-all duration-300 rounded-sm ${activeImg === i ? "border-[var(--gold)]" : "border-transparent"}`}
+                  onClick={() => setActiveImg(i)}
+                  aria-label={`Voir l'image ${i + 1}`}
+                >
+                  <Image src={img} alt="" fill className="object-cover" />
+                </button>
+              ))}
+            </div>
+            
+            <div className="flex-1 relative bg-[#f7f6f2] aspect-[1/0.85] flex items-center justify-center rounded overflow-hidden group">
+              {product.featured && (
+                <span className="absolute top-6 left-6 bg-white py-1.5 px-3 text-[10px] tracking-widest text-[var(--text)] z-10 font-semibold shadow-sm">
+                  NOUVEAUTÉ
+                </span>
+              )}
+              <button 
+                className="absolute top-6 right-6 w-11 h-11 bg-white border-none rounded-full flex items-center justify-center cursor-pointer text-[var(--text)] shadow-sm z-10 transition-all duration-300 hover:bg-[var(--gold)] hover:text-white hover:scale-110" 
+                aria-label="Ajouter aux favoris"
+              >
+                <Heart size={20} />
+              </button>
+              
+              <div className="w-full h-full relative">
+                <Image 
+                  src={images[activeImg]} 
+                  alt={product.name} 
+                  fill 
+                  className="object-cover" 
+                  priority 
+                  sizes="(max-width:1024px) 100vw, 50vw" 
+                />
+              </div>
+              
+              <button 
+                className="absolute bottom-6 right-6 w-10 h-10 bg-white/80 border-none rounded flex items-center justify-center cursor-pointer text-[var(--text)] z-10 backdrop-blur-sm" 
+                aria-label="Agrandir l'image"
+              >
+                <Maximize2 size={20} />
+              </button>
+
               {images.length > 1 && (
-                <>
-                  <button onClick={() => setActiveImg((p) => (p - 1 + images.length) % images.length)} aria-label="Image précédente"
-                    style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", background: "rgba(255,253,247,0.85)", border: "none", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-                    <ChevronLeft size={18} />
+                <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button onClick={() => setActiveImg((p) => (p - 1 + images.length) % images.length)} className="w-10 h-10 bg-white border-none rounded-full flex items-center justify-center cursor-pointer pointer-events-auto shadow-md">
+                    <ChevronLeft size={20} />
                   </button>
-                  <button onClick={() => setActiveImg((p) => (p + 1) % images.length)} aria-label="Image suivante"
-                    style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "rgba(255,253,247,0.85)", border: "none", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-                    <ChevronRight size={18} />
+                  <button onClick={() => setActiveImg((p) => (p + 1) % images.length)} className="w-10 h-10 bg-white border-none rounded-full flex items-center justify-center cursor-pointer pointer-events-auto shadow-md">
+                    <ChevronRight size={20} />
                   </button>
-                </>
+                </div>
               )}
             </div>
-            {images.length > 1 && (
-              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                {images.map((img, i) => (
-                  <button key={i} onClick={() => setActiveImg(i)} aria-label={`Voir image ${i + 1}`}
-                    style={{ width: 64, height: 64, borderRadius: 2, overflow: "hidden", border: `2px solid ${activeImg === i ? "var(--gold)" : "transparent"}`, cursor: "pointer", position: "relative", background: "var(--bg-secondary)", padding: 0 }}>
-                    <Image src={img} alt="" fill style={{ objectFit: "cover" }} sizes="64px" />
+          </div>
+
+          {/* RIGHT: INFO */}
+          <div className="flex flex-col gap-8">
+            <div>
+              <span className="text-[11px] tracking-[0.2em] text-[var(--gold)] block mb-3 font-semibold uppercase">
+                {product.collection?.name || "BREK COLLECTION"}
+              </span>
+              <h1 className="font-serif text-[clamp(2rem,5vw,3.5rem)] leading-none font-normal text-[var(--text)] uppercase m-0">
+                {product.name}
+              </h1>
+              
+              <div className="mt-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="line-through text-[var(--text-muted)] text-sm">{formatPrice(product.price * 1.8)} HT</span>
+                  <span className="bg-[#f1f1f1] py-0.5 px-2 rounded-sm text-[11px] font-bold text-[var(--text)]">45.00 %</span>
+                  <button className="bg-none border-none text-[#ccc] cursor-pointer p-0 flex" title="Informations prix"><HelpCircle size={14} /></button>
+                </div>
+                <div className="font-body text-[1.25rem] font-semibold text-[var(--text)]">
+                  {formatPrice(product.price)} HT / {product.unit.toUpperCase()}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-10 text-[12px] text-[var(--text)] pt-6 border-t border-[var(--divider)]">
+              <span className="uppercase tracking-wider opacity-60">REF: {product.ref}</span>
+              <div className="flex items-center gap-2">
+                <span className={`w-2 h-2 rounded-full ${inStock ? "bg-[#22c55e]" : "bg-[#ef4444]"}`}></span>
+                <span className="uppercase tracking-wider">STOCK : {formatStock(product.stock)} ({product.unit.toUpperCase()})</span>
+                <button className="bg-none border-none text-[#ccc] cursor-pointer p-0 flex" title="Informations stock"><HelpCircle size={14} /></button>
+              </div>
+            </div>
+
+            <div className="mt-2">
+              <div className="text-[12px] font-semibold text-[var(--text-muted)] mb-5 tracking-wider uppercase">
+                COULEUR <span className="text-[var(--text)] ml-2">{selectedColor.id} - {selectedColor.name.toUpperCase()}</span>
+              </div>
+              <div className="flex gap-4 flex-wrap">
+                {colors.map((color) => (
+                  <button 
+                    key={color.id} 
+                    className={`w-14 h-14 rounded-full border-2 p-0.5 cursor-pointer bg-white transition-all duration-300 ${selectedColor.id === color.id ? "border-[var(--text)]" : "border-transparent"}`}
+                    onClick={() => setSelectedColor(color)}
+                    aria-label={`Couleur ${color.name}`}
+                  >
+                    <div className="w-full h-full relative rounded-full overflow-hidden">
+                      <Image src={color.img} alt={color.name} fill className="object-cover" />
+                    </div>
                   </button>
                 ))}
               </div>
-            )}
-          </div>
-
-          {/* Info produit */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            {product.collection && (
-              <p style={{ fontSize: "0.6875rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--gold)" }}>
-                {product.collection.name}
-              </p>
-            )}
-            <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.75rem, 4vw, 2.5rem)", fontWeight: 400, lineHeight: 1.1 }}>
-              {product.name}
-            </h1>
-            <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", letterSpacing: "0.06em" }}>Réf. {product.ref}</p>
-
-            <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem" }}>
-              <span style={{ fontFamily: "var(--font-display)", fontSize: "2rem", fontWeight: 300 }}>{formatPrice(product.price)}</span>
-              <span style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>/ {product.unit}</span>
             </div>
 
-            {/* Stock */}
-            <div>
-              {inStock ? (
-                <span className="badge badge-green">{formatStock(product.stock)} disponibles</span>
-              ) : (
-                <span className="badge badge-red">Rupture de stock</span>
-              )}
-            </div>
-
-            {/* Quantité + Ajout panier */}
-            {inStock && (
-              <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
-                <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--divider)", borderRadius: 2, overflow: "hidden" }}>
-                  <button onClick={() => setQty((q) => Math.max(0.5, +(q - 0.5).toFixed(1)))} style={{ width: 40, height: 48, background: "var(--bg-secondary)", border: "none", cursor: "pointer", fontSize: "1.125rem", color: "var(--text)" }} aria-label="Réduire">−</button>
-                  <span style={{ minWidth: 60, textAlign: "center", fontWeight: 500 }}>{qty} m</span>
-                  <button onClick={() => setQty((q) => Math.min(product.stock, +(q + 0.5).toFixed(1)))} style={{ width: 40, height: 48, background: "var(--bg-secondary)", border: "none", cursor: "pointer", fontSize: "1.125rem", color: "var(--text)" }} aria-label="Augmenter">+</button>
-                </div>
-                <button className="btn btn-primary" style={{ flex: 1, justifyContent: "center" }} onClick={handleAdd} disabled={added} id="add-to-cart-btn" aria-label={`Ajouter ${product.name} au panier`}>
-                  <ShoppingBag size={16} />
-                  {added ? "Ajouté !" : "Ajouter au panier"}
-                </button>
-                <button className="btn btn-secondary" style={{ padding: "0 1rem", height: 48 }} aria-label="Ajouter aux favoris" id="wishlist-btn">
-                  <Heart size={18} />
-                </button>
+            <div className="flex gap-4 mt-4">
+              <div className="w-[90px]">
+                <input 
+                  type="number" 
+                  value={qty} 
+                  onChange={(e) => setQty(parseFloat(e.target.value) || 0)}
+                  className="w-full h-[56px] border border-[var(--divider)] text-center text-base font-medium bg-white outline-none focus:border-[var(--text)] transition-colors"
+                  step="0.5"
+                  min="0.5"
+                />
               </div>
-            )}
-
-            {/* Actions */}
-            <div style={{ display: "flex", gap: "0.75rem", paddingTop: "0.5rem", borderTop: "1px solid var(--divider)" }}>
-              <a href={images[0]} download className="btn btn-ghost btn-sm" aria-label="Télécharger l'image">
-                <Download size={14} /> Image
-              </a>
-              {product.pdfUrl && (
-                <a href={product.pdfUrl} download className="btn btn-ghost btn-sm" aria-label="Télécharger la fiche produit PDF">
-                  <Download size={14} /> Fiche produit
-                </a>
-              )}
-              <Link href={`/${locale}/contact`} className="btn btn-ghost btn-sm">
-                Sur-mesure
-              </Link>
+              <button 
+                className="flex-1 h-[56px] bg-[#4a3b3b] text-white border-none flex items-center justify-center gap-3 text-[13px] font-semibold tracking-widest cursor-pointer transition-all duration-300 hover:bg-[#1a1614] disabled:bg-[#ccc] disabled:cursor-not-allowed" 
+                onClick={handleAdd} disabled={!inStock}
+              >
+                <ShoppingBag size={20} />
+                {!inStock ? "ÉPUISÉ" : added ? "AJOUTÉ !" : "AJOUTER AU PANIER"}
+              </button>
             </div>
 
-            {/* Description */}
-            <div style={{ paddingTop: "0.5rem" }}>
-              <h2 style={{ fontSize: "0.6875rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gold)", marginBottom: "0.75rem", fontFamily: "var(--font-body)" }}>Description</h2>
-              <p style={{ color: "var(--text-muted)", lineHeight: 1.8, fontSize: "0.9375rem" }}>{product.description}</p>
-            </div>
-
-            {/* Caractéristiques */}
-            {Object.keys(product.metadata).length > 0 && (
-              <div>
-                <h2 style={{ fontSize: "0.6875rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gold)", marginBottom: "0.75rem", fontFamily: "var(--font-body)" }}>Caractéristiques</h2>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <div className="border-t border-b border-[var(--divider)]">
+              <button 
+                className="w-full py-6 flex justify-between items-center bg-none border-none cursor-pointer text-[12px] font-bold tracking-widest text-[var(--text)] text-left uppercase" 
+                onClick={() => setShowFeatures(!showFeatures)}
+                aria-expanded={showFeatures}
+              >
+                CARACTÉRISTIQUES
+                <span className="relative w-2.5 h-2.5">
+                  <span className={`absolute bg-[var(--text)] transition-transform duration-300 w-full h-[1.5px] top-[4px] left-0`}></span>
+                  <span className={`absolute bg-[var(--text)] transition-all duration-300 w-[1.5px] h-full top-0 left-[4px] ${showFeatures ? "rotate-90 opacity-0" : ""}`}></span>
+                </span>
+              </button>
+              <div className={`overflow-hidden transition-all duration-500 ease-[var(--ease-luxury)] ${showFeatures ? "max-h-[500px] pb-8 opacity-100" : "max-h-0 opacity-0"}`}>
+                <table className="w-full text-[13px] leading-[2.2]">
                   <tbody>
-                    {metaRows.filter((r) => product.metadata[r.key]).map((r) => (
-                      <tr key={r.key} style={{ borderBottom: "1px solid var(--divider)" }}>
-                        <td style={{ padding: "0.625rem 0", fontSize: "0.8125rem", color: "var(--text-muted)", width: "40%" }}>{r.label}</td>
-                        <td style={{ padding: "0.625rem 0", fontSize: "0.8125rem", color: "var(--text)", fontWeight: 500 }}>{product.metadata[r.key]}</td>
+                    {Object.entries(product.metadata).map(([key, val]) => (
+                      <tr key={key}>
+                        <td className="text-[var(--text-muted)] w-[40%]">{key}</td>
+                        <td className="text-[var(--text)] font-medium">{val}</td>
                       </tr>
                     ))}
+                    <tr>
+                      <td className="text-[var(--text-muted)] w-[40%]">Référence</td>
+                      <td className="text-[var(--text)] font-medium">{product.ref}</td>
+                    </tr>
+                    <tr>
+                      <td className="text-[var(--text-muted)] w-[40%]">Unité</td>
+                      <td className="text-[var(--text)] font-medium">{product.unit}</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
-            )}
+            </div>
 
-            {/* Designer */}
-            {product.collection?.designers?.length && (
-              <div style={{ background: "var(--bg-secondary)", borderRadius: 4, padding: "1rem 1.25rem", display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                <div>
-                  <p style={{ fontSize: "0.6875rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gold)", marginBottom: "0.25rem" }}>Designer</p>
-                  <p style={{ fontFamily: "var(--font-display)", fontSize: "1.125rem" }}>{product.collection.designers[0].designer.name}</p>
+            {/* Designer Section */}
+            {product.collection?.designers?.[0] && (
+              <div className="p-6 bg-[var(--bg-secondary)] flex justify-between items-center rounded-sm">
+                <div className="flex flex-col">
+                  <span className="text-[10px] tracking-wider text-[var(--gold)] font-semibold mb-1 uppercase">DESIGNER</span>
+                  <span className="font-serif text-[1.125rem] text-[var(--text)]">{product.collection.designers[0].designer.name}</span>
                 </div>
-                <Link href={`/${locale}/designers/${product.collection.designers[0].designer.slug}`} className="btn btn-ghost btn-sm" style={{ marginLeft: "auto" }}>
-                  Voir profil <ArrowRight size={12} />
+                <Link 
+                  href={`/${locale}/designers/${product.collection.designers[0].designer.slug}`} 
+                  className="text-[11px] tracking-wider text-[var(--text)] font-bold no-underline flex items-center gap-2"
+                >
+                  VOIR LE PROFIL <ArrowRight size={14} />
                 </Link>
               </div>
             )}
@@ -188,12 +270,9 @@ export function ProductDetailClient({ product, suggestions, locale }: ProductDet
 
         {/* Suggestions */}
         {suggestions.length > 0 && (
-          <section style={{ marginTop: "5rem" }} aria-labelledby="suggestions-title">
-            <p className="section-subtitle">Recommandations</p>
-            <h2 id="suggestions-title" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 300, marginBottom: "2rem" }}>
-              Vous aimerez aussi
-            </h2>
-            <div className="products-grid">
+          <section className="mt-32">
+            <h2 className="font-serif text-[2.5rem] font-light mb-16 text-center">Vous aimerez aussi</h2>
+            <div className="grid grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {suggestions.map((s) => <ProductCard key={s.id} product={s} locale={locale} />)}
             </div>
           </section>
