@@ -29,9 +29,9 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
 
   const sections = [
     { id: "passementerie", title: "TRIMMINGS", href: `/${locale}/produits?category=passementerie`, image: "/assets/menu/menu_passementerie.jpg" },
-    { id: "tringlerie", title: "HARDWARE", href: `/${locale}/produits?category=tringlerie`, image: "/assets/menu/menu_tringlerie.jpg" },
+    // { id: "tringlerie", title: "HARDWARE", href: `/${locale}/produits?category=tringlerie`, image: "/assets/menu/menu_tringlerie.jpg" },
     { id: "tissus", title: "FABRICS", href: `/${locale}/produits?category=tissus`, image: "/assets/menu/menu_tissu.jpg" },
-    { id: "fournitures", title: "SUPPLIES", href: `/${locale}/produits?category=fournitures`, image: "/assets/menu/menu_fournitures.jpg" },
+    //{ id: "fournitures", title: "SUPPLIES", href: `/${locale}/produits?category=fournitures`, image: "/assets/menu/menu_fournitures.jpg" },
     { id: "designers", title: "OUR DESIGNERS", href: `/${locale}/designers`, image: "/assets/menu/menu_designer.png" },
     { id: "sur-mesure", title: "CUSTOM", href: `/${locale}/contact`, image: "/assets/menu/menu_surmesure.jpg" },
   ];
@@ -39,13 +39,13 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
   const footerLinksLeft = [
     { title: "À PROPOS", href: `/${locale}/a-propos` },
     { title: "PROJETS", href: `/${locale}/projets` },
-    { title: "SHOWROOMS", href: `/${locale}/contact` },
-    { title: "BREK DANS LE MONDE", href: `/${locale}/contact` },
+    //{ title: "SHOWROOMS", href: `/${locale}/contact` },
+    //{ title: "BREK DANS LE MONDE", href: `/${locale}/contact` },
   ];
 
   const footerLinksRight = [
     { title: "ACTUALITÉS", href: `/${locale}/newsletter` },
-    { title: "PRESSE", href: `/${locale}/contact` },
+    //{ title: "PRESSE", href: `/${locale}/contact` },
     { title: "NOUS CONTACTER", href: `/${locale}/contact` },
   ];
 
@@ -84,10 +84,12 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
                   onMouseLeave={() => setActiveSection(null)}
                 >
                   <Link href={section.href} className="megamenu__link" onClick={onClose}>
-                    {section.title}
-                    {["passementerie", "tringlerie", "tissus", "fournitures"].includes(section.id) && (
-                      <Plus size={24} strokeWidth={1} className="megamenu__plus" />
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                      <span className="megamenu__link-text">{section.title}</span>
+                      {["passementerie", "tringlerie", "tissus", "fournitures"].includes(section.id) && (
+                        <Plus size={24} strokeWidth={1} className="megamenu__plus" />
+                      )}
+                    </div>
                   </Link>
                 </li>
               ))}
@@ -215,7 +217,6 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
         .megamenu__link {
           display: flex;
           align-items: center;
-          justify-content: space-between;
           padding: 1.5rem 0;
           font-family: var(--font-display);
           font-size: 2.2rem;
@@ -223,6 +224,9 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
           color: #fff;
           transition: all 0.3s;
           line-height: 1;
+        }
+        .megamenu__link-text {
+          white-space: nowrap;
         }
         .megamenu__plus {
           opacity: 0.6;
