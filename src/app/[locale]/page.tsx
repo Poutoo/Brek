@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { HeroSection } from "@/components/sections/HeroSection";
-import { CollectionsSection } from "@/components/sections/CollectionsSection";
+import { CollectionsSlider } from "@/components/sections/CollectionsSlider";
 import { FeaturedProductsSection } from "@/components/sections/FeaturedProductsSection";
 import { DesignersPreviewSection } from "@/components/sections/DesignersPreviewSection";
 import { NewsletterSection } from "@/components/sections/NewsletterSection";
@@ -47,7 +47,7 @@ export default async function HomePage({
   return (
     <>
       <HeroSection locale={locale} collections={collections.slice(0, 3)} />
-      <CollectionsSection collections={collections} locale={locale} />
+      <CollectionsSlider collections={collections} locale={locale} />
       <FeaturedProductsSection products={featuredProducts} locale={locale} />
       <DesignersPreviewSection designers={designers} locale={locale} />
       <NewsletterSection locale={locale} />

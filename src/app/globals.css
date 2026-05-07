@@ -116,6 +116,14 @@ img {
   border-radius: 2px;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* ─── COMPOSANTS ────────────────────────────────────────────────────────────── */
 
 /* Boutons */
@@ -363,7 +371,31 @@ img {
   .container-brek { padding: 0 2.5rem; }
 }
 @media (min-width: 1200px) {
-  .container-brek { padding: 0 4rem; }
+  .container-brek { padding: 0 8rem; }
+}
+
+/* Slider aligned with container start */
+.slider-container-aligned {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  scroll-padding-left: 1.5rem;
+}
+@media (min-width: 768px) {
+  .slider-container-aligned { 
+    padding-left: 2.5rem; 
+    padding-right: 2.5rem;
+    scroll-padding-left: 2.5rem;
+  }
+}
+@media (min-width: 1200px) {
+  .slider-container-aligned {
+    padding-left: 8rem;
+    padding-right: 8rem;
+    scroll-padding-left: 8rem;
+  }
+}
+@media (min-width: 1440px) {
+  /* Prevent padding from getting too large if 100vw > 1440px is handled by calc above */
 }
 
 /* ─── GRID PRODUCTS ─────────────────────────────────────────────────────────── */

@@ -12,7 +12,7 @@ interface Collection {
   slug: string;
   description: string;
   coverImage: string;
-  videoUrl?: string;
+  videoUrl?: string | null;
 }
 
 interface HeroSectionProps {
