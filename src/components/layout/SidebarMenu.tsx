@@ -69,7 +69,7 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
       </div>
 
       {/* Menu Panel */}
-      <div className="relative z-10 w-full max-w-[400px] md:max-w-[480px] h-full bg-[#7a6a64] flex flex-col p-8 md:p-12 shadow-2xl animate-sidebar-panel">
+      <div className="relative z-10 w-full max-w-[400px] md:max-w-[480px] h-full bg-[#7a6a64] text-white flex flex-col p-8 md:p-12 shadow-2xl animate-sidebar-panel">
         <div className="mb-12">
           <button className="flex items-center gap-4 bg-transparent border-none text-white cursor-pointer transition-opacity hover:opacity-70" onClick={onClose}>
             <Plus size={32} strokeWidth={1} className="rotate-45" />
