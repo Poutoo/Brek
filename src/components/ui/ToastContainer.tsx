@@ -45,16 +45,25 @@ export function ToastContainer() {
 
   return (
     <ToastContext.Provider value={{ addToast }}>
-      <div className="toast-container" role="region" aria-live="polite" aria-label="Notifications">
+      <div 
+        className="fixed bottom-8 right-8 z-[2000] flex flex-col gap-3 pointer-events-none" 
+        role="region" 
+        aria-live="polite" 
+        aria-label="Notifications"
+      >
         {toasts.map((toast) => (
-          <div key={toast.id} className="toast" role="alert">
-            <div className="toast-icon">{icons[toast.type]}</div>
-            <div className="toast-content">
-              <p className="toast-title">{toast.title}</p>
-              {toast.message && <p className="toast-message">{toast.message}</p>}
+          <div 
+            key={toast.id} 
+            className="pointer-events-auto flex items-start gap-3 p-3.5 bg-[var(--bg-card)] border border-[var(--divider)] shadow-xl rounded min-w-[300px] max-w-[420px] animate-[slideUp_0.4s_var(--ease-luxury)]" 
+            role="alert"
+          >
+            <div className="shrink-0 mt-[1px]">{icons[toast.type]}</div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-[var(--text)]">{toast.title}</p>
+              {toast.message && <p className="text-[0.8125rem] text-[var(--text-muted)] mt-0.5">{toast.message}</p>}
             </div>
             <button
-              className="toast-close"
+              className="flex items-center justify-center w-6 h-6 bg-transparent border-none text-[var(--text-muted)] cursor-pointer rounded shrink-0 transition-colors hover:bg-[var(--bg-secondary)]"
               onClick={() => removeToast(toast.id)}
               aria-label="Fermer la notification"
             >
@@ -63,41 +72,6 @@ export function ToastContainer() {
           </div>
         ))}
       </div>
-      <style jsx>{`
-        .toast {
-          display: flex;
-          align-items: flex-start;
-          gap: 0.75rem;
-          padding: 0.875rem 1rem;
-        }
-        .toast-icon { flex-shrink: 0; margin-top: 1px; }
-        .toast-content { flex: 1; min-width: 0; }
-        .toast-title {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: var(--text);
-        }
-        .toast-message {
-          font-size: 0.8125rem;
-          color: var(--text-muted);
-          margin-top: 2px;
-        }
-        .toast-close {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 24px;
-          height: 24px;
-          background: transparent;
-          border: none;
-          color: var(--text-muted);
-          cursor: pointer;
-          border-radius: 2px;
-          flex-shrink: 0;
-          transition: background 0.15s;
-        }
-        .toast-close:hover { background: var(--bg-secondary); }
-      `}</style>
     </ToastContext.Provider>
   );
 }

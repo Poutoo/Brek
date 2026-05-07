@@ -62,27 +62,32 @@ export function SearchOverlay({ locale, onClose }: SearchOverlayProps) {
   return (
     <>
       <div
-        className="search-overlay-bg"
+        className="fixed inset-0 bg-[#1a1614]/60 backdrop-blur-sm z-[700] animate-fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="search-overlay" role="dialog" aria-modal="true" aria-label="Recherche">
-        <form onSubmit={handleSubmit} className="search-form">
-          <Search size={20} className="search-icon" aria-hidden="true" />
+      <div 
+        className="fixed top-0 left-0 right-0 bg-[var(--bg-card)] z-[701] shadow-2xl animate-slide-in-left max-h-[80vh] overflow-y-auto" 
+        role="dialog" 
+        aria-modal="true" 
+        aria-label="Recherche"
+      >
+        <form onSubmit={handleSubmit} className="flex items-center gap-3 p-5 border-b border-[var(--divider)]">
+          <Search size={20} className="text-[var(--text-muted)] shrink-0" aria-hidden="true" />
           <input
             ref={inputRef}
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher par nom ou référence…"
-            className="search-input"
+            className="flex-1 font-body text-[1.0625rem] bg-transparent border-none outline-none text-[var(--text)] placeholder:text-[var(--text-muted)]"
             aria-label="Rechercher des produits"
             id="search-input"
           />
           {query && (
             <button
               type="button"
-              className="search-clear"
+              className="flex items-center justify-center w-7 h-7 bg-[var(--bg-secondary)] border-none rounded-full text-[var(--text-muted)] cursor-pointer"
               onClick={() => setQuery("")}
               aria-label="Effacer la recherche"
             >
@@ -93,13 +98,13 @@ export function SearchOverlay({ locale, onClose }: SearchOverlayProps) {
 
         {/* Résultats */}
         {loading && (
-          <div className="search-results">
+          <div className="p-3 flex flex-col gap-1">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="search-result-skeleton">
-                <div className="skeleton" style={{ width: 48, height: 48, borderRadius: 2, flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <div className="skeleton" style={{ height: 14, width: "60%", marginBottom: 6 }} />
-                  <div className="skeleton" style={{ height: 11, width: "30%" }} />
+              <div key={i} className="flex items-center gap-3 p-3">
+                <div className="skeleton w-12 h-12 rounded-sm shrink-0" />
+                <div className="flex-1">
+                  <div className="skeleton h-3.5 w-[60%] mb-1.5" />
+                  <div className="skeleton h-[11px] w-[30%]" />
                 </div>
               </div>
             ))}
@@ -107,11 +112,11 @@ export function SearchOverlay({ locale, onClose }: SearchOverlayProps) {
         )}
 
         {!loading && results.length > 0 && (
-          <div className="search-results">
+          <div className="p-3 flex flex-col gap-1">
             {results.map((product) => (
               <button
                 key={product.id}
-                className="search-result-item"
+                className="flex items-center gap-3 p-3 bg-transparent border-none rounded cursor-pointer text-left transition-colors hover:bg-[var(--bg-secondary)] w-full"
                 onClick={() => {
                   router.push(`/${locale}/produits/${product.slug}`);
                   onClose();
@@ -123,17 +128,17 @@ export function SearchOverlay({ locale, onClose }: SearchOverlayProps) {
                   alt={product.name}
                   width={48}
                   height={48}
-                  className="search-result-img"
+                  className="w-12 h-12 object-cover rounded-sm shrink-0"
                 />
-                <div className="search-result-info">
-                  <p className="search-result-name">{product.name}</p>
-                  <p className="search-result-ref">Réf. {product.ref}</p>
+                <div className="flex-1">
+                  <p className="text-[0.875rem] text-[var(--text)] font-medium">{product.name}</p>
+                  <p className="text-[0.75rem] text-[var(--text-muted)] mt-0.5">Réf. {product.ref}</p>
                 </div>
-                <ArrowRight size={14} className="search-result-arrow" />
+                <ArrowRight size={14} className="text-[var(--text-muted)] shrink-0" />
               </button>
             ))}
             <button
-              className="search-see-all"
+              className="flex items-center justify-center gap-2 p-3 text-[0.8125rem] text-[var(--gold)] font-medium bg-transparent border-none border-t border-[var(--divider)] cursor-pointer w-full transition-colors hover:bg-[var(--bg-secondary)] mt-1"
               onClick={() => {
                 router.push(`/${locale}/produits?q=${encodeURIComponent(query)}`);
                 onClose();
@@ -146,141 +151,11 @@ export function SearchOverlay({ locale, onClose }: SearchOverlayProps) {
         )}
 
         {!loading && query.length >= 2 && results.length === 0 && (
-          <div className="search-empty">
+          <div className="p-6 text-center text-[0.875rem] text-[var(--text-muted)]">
             <p>Aucun résultat pour « <strong>{query}</strong> »</p>
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        .search-overlay-bg {
-          position: fixed;
-          inset: 0;
-          background: rgba(26, 22, 20, 0.6);
-          z-index: 700;
-          backdrop-filter: blur(4px);
-          animation: fadeIn 0.2s var(--ease-luxury);
-        }
-        .search-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          background: var(--bg-card);
-          z-index: 701;
-          box-shadow: var(--shadow-lg);
-          animation: slideInLeft 0.25s var(--ease-luxury);
-          max-height: 80vh;
-          overflow-y: auto;
-        }
-        .search-form {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 1.25rem 1.5rem;
-          border-bottom: 1px solid var(--divider);
-        }
-        .search-icon {
-          color: var(--text-muted);
-          flex-shrink: 0;
-        }
-        .search-input {
-          flex: 1;
-          font-family: var(--font-body);
-          font-size: 1.0625rem;
-          background: transparent;
-          border: none;
-          outline: none;
-          color: var(--text);
-        }
-        .search-input::placeholder { color: var(--text-muted); }
-        .search-clear {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 28px;
-          height: 28px;
-          background: var(--bg-secondary);
-          border: none;
-          border-radius: 50%;
-          color: var(--text-muted);
-          cursor: pointer;
-        }
-        .search-results {
-          padding: 0.75rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-        }
-        .search-result-skeleton {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.75rem;
-        }
-        .search-result-item {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.75rem;
-          background: transparent;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          text-align: left;
-          transition: background 0.15s;
-          width: 100%;
-        }
-        .search-result-item:hover {
-          background: var(--bg-secondary);
-        }
-        .search-result-img {
-          width: 48px;
-          height: 48px;
-          object-fit: cover;
-          border-radius: 2px;
-          flex-shrink: 0;
-        }
-        .search-result-info { flex: 1; }
-        .search-result-name {
-          font-size: 0.875rem;
-          color: var(--text);
-          font-weight: 500;
-        }
-        .search-result-ref {
-          font-size: 0.75rem;
-          color: var(--text-muted);
-          margin-top: 2px;
-        }
-        .search-result-arrow {
-          color: var(--text-muted);
-          flex-shrink: 0;
-        }
-        .search-see-all {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          padding: 0.75rem;
-          font-size: 0.8125rem;
-          color: var(--gold);
-          font-weight: 500;
-          background: transparent;
-          border: none;
-          border-top: 1px solid var(--divider);
-          cursor: pointer;
-          width: 100%;
-          transition: background 0.15s;
-          margin-top: 0.25rem;
-        }
-        .search-see-all:hover { background: var(--bg-secondary); }
-        .search-empty {
-          padding: 1.5rem;
-          text-align: center;
-          font-size: 0.875rem;
-          color: var(--text-muted);
-        }
-      `}</style>
     </>
   );
 }

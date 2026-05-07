@@ -1,8 +1,8 @@
 # gemini.md — Suivi du projet Brek
 
-## Dernière mise à jour : 2026-05-07 (CRUD Admin & Layout Dashboard)
+## Dernière mise à jour : 2026-05-07 (Migration Tailwind & Refacto CSS)
 
-## État du projet : Phase 1-6 ✅ Complétées | Phase 7 en cours...
+## État du projet : Phase 1-6 ✅ Complétées | Phase 7 : Refactoring Tailwind en cours...
 
 ---
 
@@ -28,6 +28,14 @@
 - La `url` n'est plus dans `schema.prisma` mais dans `prisma.config.ts`
 - `PrismaClient` **requiert** un adaptateur driver : `@prisma/adapter-pg` + `Pool`
 - Le script `seed.ts` et `src/lib/prisma.ts` utilisent tous les deux cet adaptateur
+
+## Migration Tailwind (Phase 7)
+- Migration massive des styles `<style jsx>` vers Tailwind CSS.
+- Composants migrés : `TopBar`, `SearchOverlay`, `SidebarMenu`, `Footer`, `CartDrawer`, `NewsletterSection`, `Modal`, `ToastContainer`, `Button`, `ProductCard`, `AddressForm`, `PaymentForm`, `AuthForm`, `ProductForm`, `ProductDetailClient`.
+- Suppression des injections de styles dynamiques (`Footer.tsx`, `Button.tsx`).
+- Utilisation systématique de `group` et `group-hover` pour les animations complexes.
+- Remplacement des floating labels par le pattern Tailwind `peer`.
+- Correction des animations complexes (Sidebar, Search, Cart) via des classes CSS nommées pour éviter les bugs de parsing JIT.
 
 ## Composants créés
 - `TopBar` : navigation responsive (mobile: hamburger / desktop: nav inline)
@@ -61,8 +69,8 @@
 | `/[locale]/mentions-legales` | ✅ |
 | `/[locale]/cgv` | ✅ |
 | `/[locale]/confidentialite` | ✅ |
-| `/[locale]/checkout` | ✅ (simulation paiement) |
-| `/[locale]/commandes` | ✅ (liste + annulation) |
+| `/[locale]/checkout` | ✅ (Multi-étapes, Devis/Commande) |
+| `/[locale]/commandes` | ✅ (Commandes & devis) |
 | `/[locale]/favoris` | ✅ |
 | `/[locale]/compte` | ✅ (Dashboard) |
 | `/[locale]/compte/adresses` | ✅ |
@@ -90,7 +98,7 @@
 - `GET/POST /api/favoris` — toggle favoris
 - `GET/POST /api/adresses` — gestion adresses
 - `GET/POST /api/paiement` — gestion cartes bancaires
-- `GET /api/devis` — liste des devis en cours
+- `GET/POST /api/devis` — liste et création des devis
 - `PUT /api/user` — mise à jour infos/sécurité
 - NextAuth `/api/auth/[...nextauth]`
 

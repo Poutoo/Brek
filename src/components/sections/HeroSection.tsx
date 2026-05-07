@@ -3,8 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useLoadingStore } from "@/store/loadingStore";
 
 interface Collection {
   id: string;
@@ -23,21 +24,32 @@ interface HeroSectionProps {
 export function HeroSection({ locale, collections }: HeroSectionProps) {
   const [current, setCurrent] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { isLoading, setIsLoading } = useLoadingStore();
   const [mounted, setMounted] = useState(false);
   const [loadedMedia, setLoadedMedia] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    setIsLoading(true);
+  }, [setIsLoading]);
 
-  // Sécurité : si après 5s rien n'est chargé, on affiche quand même
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isLoading]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsLoaded(true);
+      setIsLoading(false);
     }, 5000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [setIsLoading]);
 
   const handleMediaLoad = useCallback((id: string) => {
     setLoadedMedia((prev) => {
@@ -45,13 +57,12 @@ export function HeroSection({ locale, collections }: HeroSectionProps) {
       const next = new Set(prev);
       next.add(id);
       
-      // On débloque dès que la première slide est prête
       if (id === collections[0]?.id) {
-        setTimeout(() => setIsLoaded(true), 800);
+        setTimeout(() => setIsLoading(false), 800);
       }
       return next;
     });
-  }, [collections]);
+  }, [collections, setIsLoading]);
 
   const nextSlide = useCallback(() => {
     if (isAnimating) return;
@@ -75,30 +86,18 @@ export function HeroSection({ locale, collections }: HeroSectionProps) {
   if (!collections.length) return null;
 
   return (
-    <section className="hero" aria-label="Collections Phares">
-      {/* Loader Luxe - Inline styles pour éviter le FOUC */}
+    <section className="relative h-screen w-full overflow-hidden bg-black" aria-label="Collections Phares">
+      {/* Loader Luxe - Styles Tailwind */}
       <div 
-        className={`hero__loader ${isLoaded ? "hero__loader--hidden" : ""}`}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundColor: '#0f0c0a',
-          zIndex: 100,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: isLoaded ? 0 : 1,
-          visibility: isLoaded ? 'hidden' : 'visible',
-          transition: 'opacity 1s cubic-bezier(0.25, 0.1, 0.25, 1), visibility 1s'
-        }}
+        className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#0f0c0a] transition-all duration-1000 ease-[var(--ease-luxury)] ${!isLoading ? "invisible opacity-0 pointer-events-none" : "visible opacity-100"}`}
       >
-        <div className="hero__loader-content">
-          <div className="hero__loader-brand">
-            <span className="hero__loader-logo">BREK</span>
-            <span className="hero__loader-sub">PARIS</span>
+        <div className="flex flex-col items-center gap-10">
+          <div className="flex flex-col items-center gap-2">
+            <span className="font-serif text-[2.5rem] font-medium tracking-[0.4em] text-white animate-[loaderPulse_2.5s_infinite_var(--ease-luxury)]">BREK</span>
+            <span className="text-[0.6rem] tracking-[0.5em] text-[var(--gold)] uppercase opacity-80">PARIS</span>
           </div>
-          <div className="hero__loader-line">
-            <div className="hero__loader-progress" />
+          <div className="relative h-px w-[180px] overflow-hidden bg-white/10">
+            <div className="absolute inset-y-0 left-0 w-[60px] bg-[var(--gold)] blur-[1px] animate-[loaderProgress_2s_infinite_ease-in-out]" />
           </div>
         </div>
       </div>
@@ -106,11 +105,11 @@ export function HeroSection({ locale, collections }: HeroSectionProps) {
       {collections.map((col, index) => (
         <div 
           key={col.id} 
-          className={`hero__slide ${index === current ? "hero__slide--active" : ""}`}
+          className={`absolute inset-0 transition-all duration-800 ease-[var(--ease-luxury)] ${index === current ? "z-[2] visible opacity-100" : "z-[1] invisible opacity-0"}`}
           aria-hidden={index !== current}
         >
           {/* Background Image/Video */}
-          <div className="hero__image-wrapper">
+          <div className="absolute inset-0 z-[1]">
             {col.videoUrl ? (
               <video
                 src={col.videoUrl}
@@ -118,57 +117,68 @@ export function HeroSection({ locale, collections }: HeroSectionProps) {
                 muted
                 loop
                 playsInline
-                className="hero__video"
+                className={`absolute inset-0 h-full w-full object-cover transition-transform duration-[7000ms] linear ${index === current ? "scale-100" : "scale-110"}`}
                 onCanPlayThrough={() => handleMediaLoad(col.id)}
               />
             ) : (
-              <Image
-                src={col.coverImage || "/assets/placeholder.png"}
-                alt={col.name}
-                fill
-                priority={index === 0}
-                className="hero__image"
-                style={{ objectFit: "cover" }}
-                onLoadingComplete={() => handleMediaLoad(col.id)}
-              />
+              <div className={`relative h-full w-full transition-transform duration-[7000ms] linear ${index === current ? "scale-100" : "scale-110"}`}>
+                <Image
+                  src={col.coverImage || "/assets/placeholder.png"}
+                  alt={col.name}
+                  fill
+                  priority={index === 0}
+                  className="object-cover"
+                  onLoadingComplete={() => handleMediaLoad(col.id)}
+                />
+              </div>
             )}
-            <div className="hero__overlay" />
+            <div className="absolute inset-0 z-[2] bg-black/40" />
           </div>
 
           {/* Content */}
-          <div className="hero__content">
-            <div className="container-brek hero__content-inner">
-              <h1 className="hero__title">
+          <div className="relative z-[10] flex h-full items-center justify-center">
+            <div className="container-brek flex flex-col items-center gap-8 text-center">
+              <h1 className={`font-serif text-[clamp(3rem,10vw,8rem)] font-light leading-none tracking-[0.1em] text-white drop-shadow-[0_4px_30px_rgba(0,0,0,0.3)] transition-all duration-1000 ease-[var(--ease-luxury)] delay-300 ${index === current ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"}`}>
                 {col.name.toUpperCase()}
               </h1>
               
-              <Button 
-                href={`/${locale}/collections/${col.slug}`} 
-                variant="invert"
-                className="hero__cta-btn"
-                withLine
-              >
-                DÉCOUVRIR LA COLLECTION
-              </Button>
+              <div className={`transition-all duration-1000 ease-[var(--ease-luxury)] delay-500 ${index === current ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"}`}>
+                <Button 
+                  href={`/${locale}/collections/${col.slug}`} 
+                  variant="invert"
+                  className="px-8 py-3"
+                  withLine
+                >
+                  DÉCOUVRIR LA COLLECTION
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       ))}
 
       {/* Navigation Flèches */}
-      <button className="hero__nav-btn hero__nav-btn--prev" onClick={prevSlide} aria-label="Collection précédente">
+      <button 
+        className="absolute left-4 top-1/2 z-[20] -translate-y-1/2 p-8 text-white/40 transition-all hover:translate-x-[-5px] hover:text-white" 
+        onClick={prevSlide} 
+        aria-label="Collection précédente"
+      >
         <ChevronLeft size={32} strokeWidth={1} />
       </button>
-      <button className="hero__nav-btn hero__nav-btn--next" onClick={nextSlide} aria-label="Collection suivante">
+      <button 
+        className="absolute right-4 top-1/2 z-[20] -translate-y-1/2 p-8 text-white/40 transition-all hover:translate-x-[5px] hover:text-white" 
+        onClick={nextSlide} 
+        aria-label="Collection suivante"
+      >
         <ChevronRight size={32} strokeWidth={1} />
       </button>
 
       {/* Pagination / Dots */}
-      <div className="hero__dots">
+      <div className="absolute bottom-12 left-1/2 z-[20] flex -translate-x-1/2 gap-4">
         {collections.map((_, i) => (
           <button
             key={i}
-            className={`hero__dot ${i === current ? "hero__dot--active" : ""}`}
+            className={`h-[2px] w-10 transition-colors duration-300 ${i === current ? "bg-white" : "bg-white/20"}`}
             onClick={() => {
               if (i !== current && !isAnimating) {
                 setIsAnimating(true);
@@ -180,163 +190,6 @@ export function HeroSection({ locale, collections }: HeroSectionProps) {
           />
         ))}
       </div>
-
-      <style jsx>{`
-        .hero {
-          position: relative;
-          height: 100vh;
-          height: 100dvh;
-          width: 100%;
-          overflow: hidden;
-          background: #000;
-        }
-
-        .hero__slide {
-          position: absolute;
-          inset: 0;
-          opacity: 0;
-          visibility: hidden;
-          transition: opacity 0.8s var(--ease-luxury), visibility 0.8s;
-          z-index: 1;
-        }
-
-        .hero__slide--active {
-          opacity: 1;
-          visibility: visible;
-          z-index: 2;
-        }
-
-        .hero__image-wrapper {
-          position: absolute;
-          inset: 0;
-          z-index: 1;
-        }
-
-        .hero__image,
-        .hero__video {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transform: scale(1.1);
-          transition: transform 7s linear;
-        }
-
-        .hero__slide--active .hero__image,
-        .hero__slide--active .hero__video {
-          transform: scale(1);
-        }
-
-        .hero__overlay {
-          position: absolute;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.4);
-          z-index: 2;
-        }
-
-        .hero__content {
-          position: relative;
-          z-index: 10;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .hero__content-inner {
-          text-align: center;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 2rem;
-        }
-
-        .hero__title {
-          font-family: var(--font-display);
-          font-size: clamp(3rem, 10vw, 8rem);
-          font-weight: 300;
-          color: #fff;
-          letter-spacing: 0.1em;
-          line-height: 1;
-          margin: 0;
-          text-shadow: 0 4px 30px rgba(0,0,0,0.3);
-          transform: translateY(20px);
-          opacity: 0;
-          transition: transform 1s var(--ease-luxury), opacity 1s var(--ease-luxury);
-          transition-delay: 0.3s;
-        }
-
-        .hero__slide--active .hero__title {
-          transform: translateY(0);
-          opacity: 1;
-        }
-
-        .hero__cta-btn {
-          transform: translateY(20px);
-          opacity: 0;
-          transition: transform 1s var(--ease-luxury), opacity 1s var(--ease-luxury) !important;
-          transition-delay: 0.5s !important;
-        }
-
-        .hero__slide--active .hero__cta-btn {
-          transform: translateY(0);
-          opacity: 1;
-        }
-
-        /* Navigation */
-        .hero__nav-btn {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          background: transparent;
-          border: none;
-          color: rgba(255, 255, 255, 0.4);
-          cursor: pointer;
-          z-index: 20;
-          padding: 2rem;
-          transition: color 0.3s, transform 0.3s;
-        }
-
-        .hero__nav-btn:hover {
-          color: #fff;
-        }
-
-        .hero__nav-btn--prev { left: 1rem; }
-        .hero__nav-btn--prev:hover { transform: translateY(-50%) translateX(-5px); }
-        .hero__nav-btn--next { right: 1rem; }
-        .hero__nav-btn--next:hover { transform: translateY(-50%) translateX(5px); }
-
-        /* Pagination */
-        .hero__dots {
-          position: absolute;
-          bottom: 3rem;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          gap: 1rem;
-          z-index: 20;
-        }
-
-        .hero__dot {
-          width: 40px;
-          height: 2px;
-          background: rgba(255, 255, 255, 0.2);
-          border: none;
-          cursor: pointer;
-          transition: background 0.3s;
-        }
-
-        .hero__dot--active {
-          background: #fff;
-        }
-
-        @media (max-width: 768px) {
-          .hero__title { font-size: 4rem; }
-          .hero__nav-btn { display: none; }
-          .hero__cta { padding: 1rem 1.5rem; }
-        }
-      `}</style>
     </section>
   );
 }

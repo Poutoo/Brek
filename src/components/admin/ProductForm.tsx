@@ -107,247 +107,196 @@ export function ProductForm({ initialData, locale }: ProductFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="product-form">
-      <div className="form-grid">
-        <div className="form-main">
-          <section className="form-section">
-            <h2 className="section-title-sm">Informations Générales</h2>
-            <div className="input-group">
-              <label>Nom du produit</label>
-              <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="Ex: Galon Impérial" />
+    <form onSubmit={handleSubmit} className="mt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
+        <div className="space-y-6">
+          <section className="bg-[var(--bg-card)] border border-[var(--divider)] rounded p-6">
+            <h2 className="font-serif text-[1.125rem] mb-5 text-[var(--gold)]">Informations Générales</h2>
+            <div className="mb-5 flex flex-col gap-2">
+              <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Nom du produit</label>
+              <input 
+                type="text" name="name" value={formData.name} onChange={handleChange} required 
+                placeholder="Ex: Galon Impérial" 
+                className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+              />
             </div>
-            <div className="input-row">
-              <div className="input-group">
-                <label>Référence (Unique)</label>
-                <input type="text" name="ref" value={formData.ref} onChange={handleChange} required placeholder="Ex: BK-001" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+              <div className="flex flex-col gap-2">
+                <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Référence (Unique)</label>
+                <input 
+                  type="text" name="ref" value={formData.ref} onChange={handleChange} required 
+                  placeholder="Ex: BK-001" 
+                  className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+                />
               </div>
-              <div className="input-group">
-                <label>Slug (URL)</label>
-                <input type="text" name="slug" value={formData.slug} onChange={handleChange} required placeholder="ex-galon-imperial" />
+              <div className="flex flex-col gap-2">
+                <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Slug (URL)</label>
+                <input 
+                  type="text" name="slug" value={formData.slug} onChange={handleChange} required 
+                  placeholder="ex-galon-imperial" 
+                  className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+                />
               </div>
             </div>
-            <div className="input-group">
-              <label>Description</label>
-              <textarea name="description" value={formData.description} onChange={handleChange} rows={5} placeholder="Description détaillée..." />
+            <div className="flex flex-col gap-2">
+              <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Description</label>
+              <textarea 
+                name="description" value={formData.description} onChange={handleChange} rows={5} 
+                placeholder="Description détaillée..." 
+                className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+              />
             </div>
           </section>
 
-          <section className="form-section">
-            <h2 className="section-title-sm">Images</h2>
-            <div className="image-grid">
+          <section className="bg-[var(--bg-card)] border border-[var(--divider)] rounded p-6">
+            <h2 className="font-serif text-[1.125rem] mb-5 text-[var(--gold)]">Images</h2>
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4">
               {formData.images.map((img: string, index: number) => (
-                <div key={index} className="image-preview">
-                  <Image src={img} alt="" fill style={{ objectFit: "cover" }} />
-                  <button type="button" onClick={() => removeImage(index)} className="image-remove"><Trash2 size={14} /></button>
+                <div key={index} className="relative aspect-square rounded-sm overflow-hidden bg-[var(--bg-secondary)]">
+                  <Image src={img} alt="" fill className="object-cover" />
+                  <button 
+                    type="button" onClick={() => removeImage(index)} 
+                    className="absolute top-1 right-1 bg-black/50 text-white border-none p-1 rounded-full cursor-pointer hover:bg-black/70"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
               ))}
-              <button type="button" onClick={handleImageAdd} className="image-add">
+              <button 
+                type="button" onClick={handleImageAdd} 
+                className="aspect-square border-2 border-dashed border-[var(--divider)] bg-transparent text-[var(--text-muted)] flex flex-col items-center justify-center gap-2 cursor-pointer text-[0.75rem] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors rounded-sm"
+              >
                 <Upload size={20} />
                 <span>Ajouter URL</span>
               </button>
             </div>
           </section>
 
-          <section className="form-section">
-            <h2 className="section-title-sm">Caractéristiques Techniques (Metadata)</h2>
-            <div className="input-row">
-              <div className="input-group">
-                <label>Poids (g/m²)</label>
-                <input type="text" name="metadata.weight" value={formData.metadata.weight} onChange={handleChange} placeholder="Ex: 450" />
+          <section className="bg-[var(--bg-card)] border border-[var(--divider)] rounded p-6">
+            <h2 className="font-serif text-[1.125rem] mb-5 text-[var(--gold)]">Caractéristiques Techniques (Metadata)</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+              <div className="flex flex-col gap-2">
+                <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Poids (g/m²)</label>
+                <input 
+                  type="text" name="metadata.weight" value={formData.metadata.weight} onChange={handleChange} 
+                  placeholder="Ex: 450" 
+                  className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+                />
               </div>
-              <div className="input-group">
-                <label>Composition</label>
-                <input type="text" name="metadata.composition" value={formData.metadata.composition} onChange={handleChange} placeholder="Ex: 100% Soie" />
+              <div className="flex flex-col gap-2">
+                <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Composition</label>
+                <input 
+                  type="text" name="metadata.composition" value={formData.metadata.composition} onChange={handleChange} 
+                  placeholder="Ex: 100% Soie" 
+                  className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+                />
               </div>
             </div>
-            <div className="input-row">
-              <div className="input-group">
-                <label>Largeur (cm)</label>
-                <input type="text" name="metadata.width" value={formData.metadata.width} onChange={handleChange} placeholder="Ex: 140" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Largeur (cm)</label>
+                <input 
+                  type="text" name="metadata.width" value={formData.metadata.width} onChange={handleChange} 
+                  placeholder="Ex: 140" 
+                  className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+                />
               </div>
-              <div className="input-group">
-                <label>Origine</label>
-                <input type="text" name="metadata.origin" value={formData.metadata.origin} onChange={handleChange} placeholder="Ex: France" />
+              <div className="flex flex-col gap-2">
+                <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Origine</label>
+                <input 
+                  type="text" name="metadata.origin" value={formData.metadata.origin} onChange={handleChange} 
+                  placeholder="Ex: France" 
+                  className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+                />
               </div>
             </div>
           </section>
         </div>
 
-        <div className="form-sidebar">
-          <section className="form-section">
-            <h2 className="section-title-sm">Vente & Stock</h2>
-            <div className="input-group">
-              <label>Prix (au mètre)</label>
-              <input type="number" step="0.01" name="price" value={formData.price} onChange={handleChange} required />
+        <div className="space-y-6">
+          <section className="bg-[var(--bg-card)] border border-[var(--divider)] rounded p-6">
+            <h2 className="font-serif text-[1.125rem] mb-5 text-[var(--gold)]">Vente & Stock</h2>
+            <div className="mb-5 flex flex-col gap-2">
+              <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Prix (au mètre)</label>
+              <input 
+                type="number" step="0.01" name="price" value={formData.price} onChange={handleChange} required 
+                className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+              />
             </div>
-            <div className="input-row">
-              <div className="input-group">
-                <label>Stock ({formData.unit})</label>
-                <input type="number" step="0.1" name="stock" value={formData.stock} onChange={handleChange} required />
+            <div className="grid grid-cols-2 gap-4 mb-5">
+              <div className="flex flex-col gap-2">
+                <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Stock ({formData.unit})</label>
+                <input 
+                  type="number" step="0.1" name="stock" value={formData.stock} onChange={handleChange} required 
+                  className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+                />
               </div>
-              <div className="input-group">
-                <label>Unité</label>
-                <input type="text" name="unit" value={formData.unit} onChange={handleChange} required />
+              <div className="flex flex-col gap-2">
+                <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Unité</label>
+                <input 
+                  type="text" name="unit" value={formData.unit} onChange={handleChange} required 
+                  className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+                />
               </div>
             </div>
-            <div className="input-group">
-              <label>Commande min.</label>
-              <input type="number" step="0.1" name="minOrder" value={formData.minOrder} onChange={handleChange} required />
+            <div className="flex flex-col gap-2">
+              <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Commande min.</label>
+              <input 
+                type="number" step="0.1" name="minOrder" value={formData.minOrder} onChange={handleChange} required 
+                className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)]"
+              />
             </div>
           </section>
 
-          <section className="form-section">
-            <h2 className="section-title-sm">Organisation</h2>
-            <div className="input-group">
-              <label>Collection</label>
-              <select name="collectionId" value={formData.collectionId} onChange={handleChange}>
+          <section className="bg-[var(--bg-card)] border border-[var(--divider)] rounded p-6">
+            <h2 className="font-serif text-[1.125rem] mb-5 text-[var(--gold)]">Organisation</h2>
+            <div className="mb-5 flex flex-col gap-2">
+              <label className="text-[0.75rem] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Collection</label>
+              <select 
+                name="collectionId" value={formData.collectionId} onChange={handleChange}
+                className="p-3 bg-[var(--bg)] border border-[var(--divider)] rounded-sm text-[var(--text)] text-sm outline-none focus:border-[var(--gold)] cursor-pointer"
+              >
                 <option value="">Aucune collection</option>
                 {collections.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>
-            <div className="checkbox-group">
-              <input type="checkbox" id="featured" name="featured" checked={formData.featured} onChange={(e) => setFormData(p => ({ ...p, featured: e.target.checked }))} />
-              <label htmlFor="featured">Produit à la une</label>
+            <div className="flex items-center gap-3 mb-4">
+              <input 
+                type="checkbox" id="featured" name="featured" checked={formData.featured} 
+                onChange={(e) => setFormData(p => ({ ...p, featured: e.target.checked }))} 
+                className="accent-[var(--gold)] w-4 h-4"
+              />
+              <label htmlFor="featured" className="text-sm text-[var(--text)] lowercase-none cursor-pointer">Produit à la une</label>
             </div>
-            <div className="checkbox-group">
-              <input type="checkbox" id="active" name="active" checked={formData.active} onChange={(e) => setFormData(p => ({ ...p, active: e.target.checked }))} />
-              <label htmlFor="active">Actif (visible sur le site)</label>
+            <div className="flex items-center gap-3 mb-2">
+              <input 
+                type="checkbox" id="active" name="active" checked={formData.active} 
+                onChange={(e) => setFormData(p => ({ ...p, active: e.target.checked }))} 
+                className="accent-[var(--gold)] w-4 h-4"
+              />
+              <label htmlFor="active" className="text-sm text-[var(--text)] lowercase-none cursor-pointer">Actif (visible sur le site)</label>
             </div>
           </section>
 
-          <div className="form-actions">
-            <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: "100%", justifyContent: "center" }}>
+          <div className="flex flex-col gap-3 lg:sticky lg:top-8">
+            <button 
+              type="submit" disabled={loading} 
+              className="bg-[var(--gold)] text-white w-full py-4 px-6 font-bold text-[0.8125rem] tracking-widest uppercase transition-all hover:bg-[var(--gold)]/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 rounded-sm"
+            >
               {loading ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
               {initialData ? "Enregistrer" : "Créer le produit"}
             </button>
-            <button type="button" onClick={() => router.back()} className="btn btn-ghost" style={{ width: "100%", justifyContent: "center" }}>
+            <button 
+              type="button" onClick={() => router.back()} 
+              className="bg-transparent border border-[var(--divider)] text-[var(--text)] w-full py-4 px-6 font-bold text-[0.8125rem] tracking-widest uppercase transition-all hover:bg-[var(--bg-secondary)] flex items-center justify-center rounded-sm"
+            >
               Annuler
             </button>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .product-form {
-          margin-top: 2rem;
-        }
-        .form-grid {
-          display: grid;
-          grid-template-columns: 1fr 320px;
-          gap: 2rem;
-        }
-        @media (max-width: 900px) {
-          .form-grid { grid-template-columns: 1fr; }
-        }
-        .form-section {
-          background: var(--bg-card);
-          border: 1px solid var(--divider);
-          border-radius: 4px;
-          padding: 1.5rem;
-          margin-bottom: 1.5rem;
-        }
-        .section-title-sm {
-          font-family: var(--font-display);
-          font-size: 1.125rem;
-          margin-bottom: 1.25rem;
-          color: var(--gold);
-        }
-        .input-group {
-          margin-bottom: 1.25rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-        .input-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1rem;
-        }
-        label {
-          font-size: 0.75rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          color: var(--text-muted);
-        }
-        input[type="text"],
-        input[type="number"],
-        textarea,
-        select {
-          padding: 0.75rem 1rem;
-          background: var(--bg);
-          border: 1px solid var(--divider);
-          border-radius: 2px;
-          color: var(--text);
-          font-size: 0.875rem;
-        }
-        input:focus, textarea:focus, select:focus {
-          outline: none;
-          border-color: var(--gold);
-        }
-        .checkbox-group {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          margin-bottom: 1rem;
-        }
-        .checkbox-group label {
-          text-transform: none;
-          letter-spacing: normal;
-          font-size: 0.875rem;
-          color: var(--text);
-          cursor: pointer;
-        }
-        .image-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-          gap: 1rem;
-        }
-        .image-preview {
-          position: relative;
-          aspect-ratio: 1;
-          border-radius: 2px;
-          overflow: hidden;
-          background: var(--bg-secondary);
-        }
-        .image-remove {
-          position: absolute;
-          top: 4px;
-          right: 4px;
-          background: rgba(0,0,0,0.5);
-          color: white;
-          border: none;
-          padding: 4px;
-          border-radius: 50%;
-          cursor: pointer;
-        }
-        .image-add {
-          aspect-ratio: 1;
-          border: 2px dashed var(--divider);
-          background: transparent;
-          color: var(--text-muted);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          cursor: pointer;
-          font-size: 0.75rem;
-        }
-        .image-add:hover {
-          border-color: var(--gold);
-          color: var(--gold);
-        }
-        .form-actions {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          position: sticky;
-          top: 2rem;
-        }
-      `}</style>
     </form>
   );
 }
