@@ -32,6 +32,7 @@ async function main() {
   await prisma.newsletterArticle.deleteMany();
   await prisma.newsletterSubscriber.deleteMany();
   await prisma.contactMessage.deleteMany();
+  await prisma.project.deleteMany();
   console.log("👤 Creating designers...");
 
   const bambi = await prisma.designer.upsert({
