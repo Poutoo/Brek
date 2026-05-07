@@ -7,7 +7,7 @@ import { fr, enUS, es } from "date-fns/locale";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "La Gazette Brek — Actualités & Inspirations",
+  title: "La Gazette Brek",
   description: "Découvrez les dernières tendances, collaborations et secrets de fabrication de la maison Brek.",
 };
 
@@ -15,7 +15,7 @@ const dateLocales: Record<string, any> = { fr, en: enUS, es };
 
 export default async function NewsletterPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  
+
   const articles = await prisma.newsletterArticle.findMany({
     where: { published: true },
     orderBy: { publishedAt: "desc" },
@@ -36,11 +36,11 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
 
         {/* Liste des articles */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "2.5rem" }}>
-          {articles.map((article) => (
+          {articles.map((article: any) => (
             <article key={article.id} className="card" style={{ display: "flex", flexDirection: "column" }}>
               <div style={{ position: "relative", height: 240, overflow: "hidden" }}>
                 <Image
-                  src="/assets/placeholder.png"
+                  src={article.coverImage || "/assets/placeholder.png"}
                   alt={article.title}
                   fill
                   style={{ objectFit: "cover" }}
@@ -57,8 +57,8 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
                 <p style={{ fontSize: "0.875rem", color: "var(--text-muted)", lineHeight: 1.6, marginBottom: "1.5rem" }}>
                   {article.excerpt}
                 </p>
-                <Link 
-                  href={`/${locale}/newsletter/${article.slug}`} 
+                <Link
+                  href={`/${locale}/newsletter/${article.slug}`}
                   className="btn btn-ghost btn-sm"
                   style={{ marginTop: "auto", alignSelf: "flex-start", paddingLeft: 0 }}
                 >
@@ -79,9 +79,9 @@ export default async function NewsletterPage({ params }: { params: Promise<{ loc
             Inscrivez-vous pour recevoir nos invitations aux ventes privées et nos inspirations décoration directement dans votre boîte mail.
           </p>
           <form style={{ display: "flex", maxWidth: 400, margin: "0 auto", gap: "0.5rem", flexDirection: "column" }}>
-            <input 
-              type="email" 
-              placeholder="votre@email.com" 
+            <input
+              type="email"
+              placeholder="Brek@email.com"
               style={{ padding: "0.875rem 1.25rem", borderRadius: 2, border: "1px solid rgba(255,253,247,0.2)", background: "rgba(255,253,247,0.05)", color: "var(--cream)" }}
             />
             <button type="submit" className="btn btn-primary" style={{ justifyContent: "center" }}>

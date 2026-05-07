@@ -542,24 +542,26 @@ async function main() {
       slug: "nouvelle-collection-imperiale-2024",
       title: "La collection Impériale : un hommage aux palais d'Europe",
       excerpt: "Découvrez comment Bambi Sloan a puisé son inspiration dans les archives des Manufactures Royales pour créer la collection Impériale.",
-      content: "La collection Impériale est née d'une passion commune pour l'histoire...",
+      content: "La collection Impériale est née d'une passion commune pour l'histoire, l’architecture classique et le savoir-faire artisanal transmis à travers les siècles. Inspirée des grandes résidences européennes et des détails ornementaux qui ont traversé le temps, elle réinterprète l’élégance des décors anciens dans une écriture contemporaine, sobre et raffinée. Chaque pièce a été pensée comme un équilibre entre mémoire et modernité : des lignes sculptées avec précision, des matières nobles choisies pour leur profondeur, et des finitions réalisées à la main qui rendent chaque création singulière. Le marbre, le bois sombre et les métaux patinés dialoguent dans une palette intemporelle, conçue pour traverser les époques sans perdre de sa force. Au-delà de l’esthétique, la collection célèbre une certaine idée du luxe : un luxe silencieux, durable, fondé sur la qualité des proportions, le respect des matériaux et l’attention portée au moindre détail. Impériale ne cherche pas à reproduire le passé, mais à en prolonger l’esprit dans des intérieurs d’aujourd’hui.",
       published: true,
-      publishedAt: new Date("2024-09-15"),
+      publishedAt: new Date("2025-09-15"),
+      coverImage: "/assets/collection/imperiale/imperiale_1.png",
     },
     {
       slug: "salone-del-mobile-2024-brek",
       title: "Brek au Salone del Mobile de Milan",
       excerpt: "Retour sur notre présence au Salone del Mobile 2024, où nous avons présenté en avant-première la collection Salone en collaboration avec Michael Aiduss.",
-      content: "Milan, avril 2024. Le Salone del Mobile a accueilli cette année...",
+      content: "Milan, avril 2025. Le Salone del Mobile a accueilli cette année une génération de créateurs décidés à réinventer notre rapport aux objets, à la lumière et aux matières. Entre installations immersives, mobilier sculptural et expérimentations technologiques, la ville entière semblait vibrer au rythme d’un design plus sensoriel, plus durable et plus émotionnel. Dans les palais historiques comme dans les anciens entrepôts industriels reconvertis, les visiteurs passaient d’univers minimalistes baignés de silence à des scénographies spectaculaires où le son, la couleur et le mouvement devenaient partie intégrante de l’expérience. Le verre soufflé côtoyait l’aluminium recyclé, tandis que les textiles naturels revenaient au premier plan, portés par une volonté commune : ralentir, simplifier, donner du sens. Plus qu’un salon, cette édition 2025 s’est imposée comme un manifeste. Les grandes maisons italiennes y ont dialogué avec une nouvelle scène internationale audacieuse, brouillant les frontières entre artisanat, art contemporain et innovation numérique. Dans les rues de Milan, chaque cour intérieure, chaque galerie et chaque café semblait participer à cette célébration collective de la création.",
       published: true,
-      publishedAt: new Date("2024-04-20"),
+      publishedAt: new Date("2025-04-20"),
+      coverImage: "/assets/collection/salone/salone_1.png",
     },
   ];
 
   for (const article of articles) {
     await prisma.newsletterArticle.upsert({
       where: { slug: article.slug },
-      update: {},
+      update: article,
       create: article,
     });
     console.log(`  ✓ ${article.title}`);
