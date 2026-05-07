@@ -132,10 +132,13 @@ export function TopBar({ locale }: TopBarProps) {
 
 
 
+  const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/`;
+  const isTransparent = isHomePage && !scrolled;
+
   return (
     <>
       <header
-        className={`topbar ${scrolled ? "topbar--scrolled" : ""} ${pathname === `/${locale}` ? "topbar--home" : ""} ${!scrolled && pathname === `/${locale}` ? "topbar--on-top" : ""}`}
+        className={`topbar ${scrolled ? "topbar--scrolled" : ""} ${isTransparent ? "topbar--transparent" : "topbar--solid"}`}
         role="banner"
       >
         <div className="topbar__inner">
@@ -341,21 +344,19 @@ export function TopBar({ locale }: TopBarProps) {
           left: 8rem;
           right: 8rem;
           height: var(--nav-height);
-          background: transparent;
-          color: #fff;
+          background: #fff;
+          color: #533b3b;
           z-index: 500;
           transition: all 0.5s var(--ease-luxury);
-          border-radius: 0.5rem; /* Optionnel: légère courbure pour le style flottant */
+          border-radius: 0.5rem;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
-        /* Style when on top of home page (floating & transparent) */
-        .topbar.topbar--home.topbar--on-top {
+        .topbar--transparent {
           background: transparent;
           color: #fff;
           box-shadow: none;
         }
-        .topbar.topbar--scrolled {
-          background: #fff;
-          color: #533b3b;
+        .topbar--scrolled {
           box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
         .topbar__inner {
@@ -364,7 +365,13 @@ export function TopBar({ locale }: TopBarProps) {
           display: grid;
           grid-template-columns: 1fr auto 1fr;
           align-items: center;
-          padding: 0 1rem;
+          padding: 0 1.5rem;
+        }
+        @media (min-width: 768px) {
+          .topbar__inner { padding: 0 2.5rem; }
+        }
+        @media (min-width: 1200px) {
+          .topbar__inner { padding: 0 8rem; }
         }
         .topbar__left {
           display: flex;

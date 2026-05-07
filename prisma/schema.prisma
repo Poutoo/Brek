@@ -53,6 +53,8 @@ model User {
   sessions          Session[]
   addresses         Address[]
   orders            Order[]
+  quotes            Quote[]
+  paymentMethods    PaymentMethod[]
   cartItems         CartItem[]
   favorites         Favorite[]
   notifications     Notification[]
@@ -185,6 +187,7 @@ model Product {
   collection      Collection?      @relation(fields: [collectionId], references: [id])
   cartItems       CartItem[]
   orderItems      OrderItem[]
+  quoteItems      QuoteItem[]
   favorites       Favorite[]
   customizations  Customization[]
   restockRequests RestockRequest[]
@@ -357,6 +360,7 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
+<<<<<<< HEAD
 // ─── PROJECT / REALIZATION ───────────────────────────────────────────────────
 
 model Project {
@@ -370,3 +374,49 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 } 
+=======
+// ─── PAYMENT METHOD ──────────────────────────────────────────────────────────
+
+model PaymentMethod {
+  id        String   @id @default(cuid())
+  userId    String
+  brand     String
+  last4     String
+  expMonth  Int
+  expYear   Int
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── QUOTE ───────────────────────────────────────────────────────────────────
+
+model Quote {
+  id              String      @id @default(cuid())
+  quoteNumber     String      @unique @default(cuid())
+  userId          String
+  status          String      @default("PENDING")
+  totalAmount     Float
+  notes           String?
+  validUntil      DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     QuoteItem[]
+}
+
+model QuoteItem {
+  id          String @id @default(cuid())
+  quoteId     String
+  productId   String
+  productName String
+  productRef  String
+  quantity    Float
+  unitPrice   Float
+
+  quote   Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+>>>>>>> e3fab7c1117a7bd87370682abf63ee189ccb2dcd

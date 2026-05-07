@@ -11,7 +11,27 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log("🌱 Seeding Brek database...\n");
 
-  // ─── DESIGNERS ─────────────────────────────────────────────────────────────
+  // --- CLEANUP ---
+  console.log("🧹 Cleaning up existing data...");
+  await prisma.quoteItem.deleteMany();
+  await prisma.quote.deleteMany();
+  await prisma.paymentMethod.deleteMany();
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.cartItem.deleteMany();
+  await prisma.favorite.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.restockRequest.deleteMany();
+  await prisma.customization.deleteMany();
+  await prisma.productTag.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.designerCollection.deleteMany();
+  await prisma.collection.deleteMany();
+  await prisma.designer.deleteMany();
+  await prisma.faqItem.deleteMany();
+  await prisma.newsletterArticle.deleteMany();
+  await prisma.newsletterSubscriber.deleteMany();
+  await prisma.contactMessage.deleteMany();
   console.log("👤 Creating designers...");
 
   const bambi = await prisma.designer.upsert({
@@ -54,38 +74,40 @@ async function main() {
   // ─── COLLECTIONS ───────────────────────────────────────────────────────────
   console.log("🎨 Creating collections...");
 
-  const colImperiale = await prisma.collection.upsert({
-    where: { slug: "imperiale" },
+  const colPorta = await prisma.collection.upsert({
+    where: { slug: "porta" },
     update: {},
     create: {
-      slug: "imperiale",
-      name: "Impériale",
+      slug: "porta",
+      name: "Porta",
       description:
-        "La collection Impériale évoque la magnificence des palais européens du XVIIIe siècle. Galons brodés d'or, velours profonds et soieries chatoyantes composent un univers de grandeur absolue. Chaque pièce est pensée comme un objet de collection, destiné aux intérieurs les plus exigeants.",
-      coverImage: "/assets/collection/imperiale/imperiale_principal.png",
+        "La collection Porta évoque la magnificence des palais européens du XVIIIe siècle. Galons brodés d'or, velours profonds et soieries chatoyantes composent un univers de grandeur absolue. Chaque pièce est pensée comme un objet de collection, destiné aux intérieurs les plus exigeants.",
+      coverImage: "/assets/collection/porta/porta_principal.png",
       images: [
-        "/assets/collection/imperiale/imperiale_1.png",
-        "/assets/collection/imperiale/imperiale_2.png",
-        "/assets/collection/imperiale/imperiale_3.png",
+        "/assets/collection/porta/porta_1.png",
+        "/assets/collection/porta/porta_2.png",
+        "/assets/collection/porta/porta_3.png",
       ],
+      videoUrl: "/assets/collection/porta/porta.mp4",
       featured: true,
     },
   });
 
-  const colLeopard = await prisma.collection.upsert({
-    where: { slug: "leopard" },
+  const colIsoria = await prisma.collection.upsert({
+    where: { slug: "isoria" },
     update: {},
     create: {
-      slug: "leopard",
-      name: "Léopard",
+      slug: "isoria",
+      name: "Isoria",
       description:
         "La collection Léopard incarne l'audace et la sensualité. Inspirée des grandes savanes africaines et de l'élégance féline, cette ligne de passementerie joue sur les contrastes : douceur des velours et précision des motifs imprimés. Un hommage à la puissance naturelle, réinterprétée avec la finesse de l'artisanat français.",
-      coverImage: "/assets/collection/leopard/leopard_principal.png",
+      coverImage: "/assets/collection/isoria/isoria_principal.png",
       images: [
-        "/assets/collection/leopard/leopard_1.png",
-        "/assets/collection/leopard/leopard_2.png",
-        "/assets/collection/leopard/leopard_3.png",
+        "/assets/collection/isoria/isoria_1.png",
+        "/assets/collection/isoria/isoria_2.png",
+        "/assets/collection/isoria/isoria_3.png",
       ],
+      videoUrl: "/assets/collection/isoria/isoria.mp4",
       featured: true,
     },
   });
@@ -104,21 +126,21 @@ async function main() {
         "/assets/collection/salone/salone_2.png",
         "/assets/collection/salone/salone_3.png",
       ],
-      videoUrl: "/assets/collection/salone/salone_principal.mp4",
+      videoUrl: "/assets/collection/salone/salone.mp4",
       featured: true,
     },
   });
 
   // Liaisons Designer <-> Collection
   await prisma.designerCollection.upsert({
-    where: { designerId_collectionId: { designerId: bambi.id, collectionId: colImperiale.id } },
+    where: { designerId_collectionId: { designerId: bambi.id, collectionId: colPorta.id } },
     update: {},
-    create: { designerId: bambi.id, collectionId: colImperiale.id },
+    create: { designerId: bambi.id, collectionId: colPorta.id },
   });
   await prisma.designerCollection.upsert({
-    where: { designerId_collectionId: { designerId: eric.id, collectionId: colLeopard.id } },
+    where: { designerId_collectionId: { designerId: eric.id, collectionId: colIsoria.id } },
     update: {},
-    create: { designerId: eric.id, collectionId: colLeopard.id },
+    create: { designerId: eric.id, collectionId: colIsoria.id },
   });
   await prisma.designerCollection.upsert({
     where: { designerId_collectionId: { designerId: michael.id, collectionId: colSalone.id } },
@@ -138,15 +160,15 @@ async function main() {
   const products = [
     {
       ref: "BRK-IMP-001",
-      slug: "galon-or-imperiale",
+      slug: "galon-or-porta",
       name: "Galon Brodé Or Impérial",
       description: "Galon de haute couture brodé à la main avec des fils d'or 24 carats. Inspiré des ornements architecturaux des palais versaillais, ce galon apporte une touche de magnificence incomparable à vos projets de décoration.",
       price: 285,
       stock: 47.5,
       unit: "m",
-      images: ["/assets/collection/imperiale/imperiale_1.png", "/assets/placeholder.png"],
+      images: ["/assets/collection/porta/porta_1.png", "/assets/placeholder.png"],
       featured: true,
-      collectionId: colImperiale.id,
+      collectionId: colPorta.id,
       metadata: {
         weight: "180g/m",
         composition: "60% soie, 30% fils d'or, 10% lin",
@@ -163,9 +185,9 @@ async function main() {
       price: 340,
       stock: 23,
       unit: "m",
-      images: ["/assets/collection/imperiale/imperiale_2.png", "/assets/placeholder.png"],
+      images: ["/assets/collection/porta/porta_2.png", "/assets/placeholder.png"],
       featured: true,
-      collectionId: colImperiale.id,
+      collectionId: colPorta.id,
       metadata: {
         weight: "220g/m",
         composition: "100% soie",
@@ -182,9 +204,9 @@ async function main() {
       price: 195,
       stock: 0,
       unit: "m",
-      images: ["/assets/collection/imperiale/imperiale_3.png", "/assets/placeholder.png"],
+      images: ["/assets/collection/porta/porta_3.png", "/assets/placeholder.png"],
       featured: false,
-      collectionId: colImperiale.id,
+      collectionId: colPorta.id,
       metadata: {
         weight: "150g/m",
         composition: "70% soie, 30% fil métallique doré",
@@ -195,15 +217,15 @@ async function main() {
     },
     {
       ref: "BRK-LEO-001",
-      slug: "ruban-leopard-velours",
+      slug: "ruban-isoria-velours",
       name: "Ruban Léopard Velours Moka",
       description: "Ruban en velours ras imprimé motif léopard dans une palette de moka et caramel. La douceur du velours contraste avec l'audace du motif pour un résultat résolument contemporain et luxueux.",
       price: 128,
       stock: 85,
       unit: "m",
-      images: ["/assets/collection/leopard/leopard_1.png", "/assets/placeholder.png"],
+      images: ["/assets/collection/isoria/isoria_1.png", "/assets/placeholder.png"],
       featured: true,
-      collectionId: colLeopard.id,
+      collectionId: colIsoria.id,
       metadata: {
         weight: "210g/m",
         composition: "80% polyester, 20% viscose",
@@ -214,15 +236,15 @@ async function main() {
     },
     {
       ref: "BRK-LEO-002",
-      slug: "tissu-leopard-satin",
+      slug: "tissu-isoria-satin",
       name: "Tissu Léopard Satin Naturel",
       description: "Tissu satiné à motif léopard dans des tons naturels et dorés. Idéal pour la confection de housses de coussin, nappes de prestige et applications de mode. La qualité du satin apporte une brillance subtile qui sublime chaque motif.",
       price: 245,
       stock: 31.5,
       unit: "m",
-      images: ["/assets/collection/leopard/leopard_2.png", "/assets/collection/leopard/leopard_3.png"],
+      images: ["/assets/collection/isoria/isoria_2.png", "/assets/collection/isoria/isoria_3.png"],
       featured: true,
-      collectionId: colLeopard.id,
+      collectionId: colIsoria.id,
       metadata: {
         weight: "165g/m",
         composition: "95% soie, 5% élasthanne",
@@ -233,15 +255,15 @@ async function main() {
     },
     {
       ref: "BRK-LEO-003",
-      slug: "cordon-tresse-leopard",
+      slug: "cordon-tresse-isoria",
       name: "Cordon Tressé Léopard Caramel",
       description: "Cordon rond tressé à la main dans une palette léopard caramel et chocolat. Ce cordon polyvalent se prête aussi bien aux applications d'ameublement qu'aux créations de bijoux et accessoires de mode.",
       price: 89,
       stock: 120,
       unit: "m",
-      images: ["/assets/collection/leopard/leopard_3.png", "/assets/placeholder.png"],
+      images: ["/assets/collection/isoria/isoria_3.png", "/assets/placeholder.png"],
       featured: false,
-      collectionId: colLeopard.id,
+      collectionId: colIsoria.id,
       metadata: {
         weight: "45g/m",
         composition: "60% coton, 40% polyester",
@@ -480,6 +502,53 @@ async function main() {
     });
     console.log("  ✓ Commande DELIVERED pour Marie Dupont");
     console.log("  ✓ Commande SHIPPED pour Jean Martin");
+
+    // Devis
+    console.log("\n📝 Creating demo quote...");
+    await prisma.quote.upsert({
+      where: { quoteNumber: "DEV-DEMO-001" },
+      update: {},
+      create: {
+        quoteNumber: "DEV-DEMO-001",
+        userId: user1.id,
+        status: "PENDING",
+        totalAmount: galon.price * 5 + frange.price * 3,
+        validUntil: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // + 15 jours
+        items: {
+          create: [
+            {
+              productId: galon.id,
+              productName: galon.name,
+              productRef: galon.ref,
+              quantity: 5,
+              unitPrice: galon.price,
+            },
+            {
+              productId: frange.id,
+              productName: frange.name,
+              productRef: frange.ref,
+              quantity: 3,
+              unitPrice: frange.price,
+            },
+          ],
+        },
+      },
+    });
+    console.log("  ✓ Devis PENDING pour Marie Dupont");
+
+    // Cartes bancaires
+    console.log("\n💳 Creating demo payment methods...");
+    await prisma.paymentMethod.create({
+      data: {
+        userId: user1.id,
+        brand: "Visa",
+        last4: "4242",
+        expMonth: 12,
+        expYear: 28,
+        isDefault: true,
+      },
+    });
+    console.log("  ✓ Carte bancaire Visa pour Marie Dupont");
   }
 
   // ─── FAQ ───────────────────────────────────────────────────────────────────
@@ -539,7 +608,7 @@ async function main() {
 
   const articles = [
     {
-      slug: "nouvelle-collection-imperiale-2024",
+      slug: "nouvelle-collection-porta-2024",
       title: "La collection Impériale : un hommage aux palais d'Europe",
       excerpt: "Découvrez comment Bambi Sloan a puisé son inspiration dans les archives des Manufactures Royales pour créer la collection Impériale.",
       content: "La collection Impériale est née d'une passion commune pour l'histoire, l’architecture classique et le savoir-faire artisanal transmis à travers les siècles. Inspirée des grandes résidences européennes et des détails ornementaux qui ont traversé le temps, elle réinterprète l’élégance des décors anciens dans une écriture contemporaine, sobre et raffinée. Chaque pièce a été pensée comme un équilibre entre mémoire et modernité : des lignes sculptées avec précision, des matières nobles choisies pour leur profondeur, et des finitions réalisées à la main qui rendent chaque création singulière. Le marbre, le bois sombre et les métaux patinés dialoguent dans une palette intemporelle, conçue pour traverser les époques sans perdre de sa force. Au-delà de l’esthétique, la collection célèbre une certaine idée du luxe : un luxe silencieux, durable, fondé sur la qualité des proportions, le respect des matériaux et l’attention portée au moindre détail. Impériale ne cherche pas à reproduire le passé, mais à en prolonger l’esprit dans des intérieurs d’aujourd’hui.",

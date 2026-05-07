@@ -14,8 +14,8 @@ export function Footer({ locale }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   const collections = [
-    { href: `/${locale}/collections/imperiale`, label: "Impériale" },
-    { href: `/${locale}/collections/leopard`, label: "Léopard" },
+    { href: `/${locale}/collections/isoria`, label: "Isoria" },
+    { href: `/${locale}/collections/porta`, label: "Porta" },
     { href: `/${locale}/collections/salone`, label: "Salone" },
   ];
 
