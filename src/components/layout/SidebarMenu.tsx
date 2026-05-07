@@ -101,7 +101,7 @@ export function SidebarMenu({ locale, onClose }: SidebarMenuProps) {
 
         <div className="grid grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
-            <Link href={`/${locale}/a-propos`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
+            <Link href={`/${locale}/apropos`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
               L'HISTOIRE
             </Link>
             <Link href={`/${locale}/contact`} className="text-[0.65rem] tracking-widest uppercase text-white/50 transition-colors hover:text-white no-underline" onClick={onClose}>
